@@ -39,6 +39,7 @@ export interface NDCPackage {
   packageDescription: string;
   packageQuantity: number;
   packageUnit: string;
+  isActive: boolean;
 }
 
 export interface CalculationResult {
