@@ -7,6 +7,7 @@
 import type { RxNormResult } from '$lib/types';
 import { getConfig } from '$lib/utils/config';
 import { getCacheService, type CacheService } from './cache';
+import { getAuditService, type AuditService } from './audit';
 
 interface RxNormApproximateTermResponse {
 	approximateGroup: {
@@ -44,10 +45,12 @@ interface RxNormNDCResponse {
 export class RxNormService {
 	private baseUrl: string;
 	private cache: CacheService;
+	private audit: AuditService;
 
 	constructor() {
 		this.baseUrl = getConfig().apis.rxnorm.baseUrl;
 		this.cache = getCacheService();
+		this.audit = getAuditService();
 	}
 
 	/**
@@ -55,15 +58,25 @@ export class RxNormService {
 	 * Filters results to prescribable drugs only
 	 * Results are cached for 30 days
 	 */
-	async findRxCUI(drugName: string, strength?: string, form?: string): Promise<RxNormResult[]> {
+	async findRxCUI(drugName: string, strength?: string, form?: string, userId?: string): Promise<RxNormResult[]> {
+		const startTime = Date.now();
+
 		// Build search term combining drugName + strength + form
 		let searchTerm = drugName.trim();
 		if (strength) searchTerm += ` ${strength}`;
 		if (form) searchTerm += ` ${form}`;
 
+		// Build prescription text for audit logging
+		const prescriptionText = `Drug: ${drugName}${strength ? `, Strength: ${strength}` : ''}${form ? `, Form: ${form}` : ''}`;
+
 		// Check cache first (30-day TTL)
 		const cachedRxCUI = await this.cache.getCachedRxCUI(drugName, strength, form);
 		if (cachedRxCUI) {
+			const processingTime = Date.now() - startTime;
+
+			// Log cached RxNorm lookup
+			await this.audit.logRxNormLookup(prescriptionText, cachedRxCUI, drugName, processingTime, { userId });
+
 			// If cached, we know it's already validated as prescribable
 			return [
 				{
@@ -74,33 +87,52 @@ export class RxNormService {
 			];
 		}
 
-		// Call RxNorm API
-		const candidates = await this.approximateTerm(searchTerm);
-		if (!candidates || candidates.length === 0) {
-			return [];
-		}
+		try {
+			// Call RxNorm API
+			const candidates = await this.approximateTerm(searchTerm);
+			if (!candidates || candidates.length === 0) {
+				const processingTime = Date.now() - startTime;
+				await this.audit.logRxNormLookup(prescriptionText, null, drugName, processingTime, { userId });
+				return [];
+			}
 
-		// Filter to prescribable drugs and enrich with properties
-		const results: RxNormResult[] = [];
-		for (const candidate of candidates) {
-			const properties = await this.getDrugPropertiesInternal(candidate.rxcui);
+			// Filter to prescribable drugs and enrich with properties
+			const results: RxNormResult[] = [];
+			for (const candidate of candidates) {
+				const properties = await this.getDrugPropertiesInternal(candidate.rxcui);
 
-			// Check if prescribable based on term type
-			if (properties?.tty && this.isPrescribableTermType(properties.tty)) {
-				results.push({
-					rxcui: candidate.rxcui,
-					name: properties.name || searchTerm,
-					tty: properties.tty
-				});
+				// Check if prescribable based on term type
+				if (properties?.tty && this.isPrescribableTermType(properties.tty)) {
+					results.push({
+						rxcui: candidate.rxcui,
+						name: properties.name || searchTerm,
+						tty: properties.tty
+					});
 
-				// Cache the first (best) prescribable match
-				if (results.length === 1) {
-					await this.cache.cacheRxCUI(drugName, candidate.rxcui, strength, form);
+					// Cache the first (best) prescribable match
+					if (results.length === 1) {
+						await this.cache.cacheRxCUI(drugName, candidate.rxcui, strength, form);
+					}
 				}
 			}
-		}
 
-		return results;
+			const processingTime = Date.now() - startTime;
+			const firstRxcui = results.length > 0 ? results[0].rxcui : null;
+
+			// Log RxNorm lookup result
+			await this.audit.logRxNormLookup(prescriptionText, firstRxcui, drugName, processingTime, { userId });
+
+			return results;
+		} catch (error) {
+			const processingTime = Date.now() - startTime;
+
+			// Log API error
+			if (error instanceof Error) {
+				await this.audit.logAPIError('RxNorm', prescriptionText, error, { userId, processingTime });
+			}
+
+			throw error;
+		}
 	}
 
 	/**

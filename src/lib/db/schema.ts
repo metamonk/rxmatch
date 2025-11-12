@@ -141,8 +141,8 @@ export const reviewQueue = pgTable(
       .$defaultFn(() => createId()),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
-    status: reviewStatusEnum('status').default('PENDING').notNull(),
-    priority: priorityEnum('priority').default('MEDIUM').notNull(),
+    status: reviewStatusEnum('status').default('pending').notNull(),
+    priority: priorityEnum('priority').default('medium').notNull(),
 
     // Original data
     prescriptionInput: jsonb('prescription_input').notNull(),
@@ -235,6 +235,15 @@ export const ndcPackage = pgTable(
 );
 
 // Type exports
+export type User = typeof users.$inferSelect;
+export type NewUser = typeof users.$inferInsert;
+
+export type CalculationAudit = typeof calculationAudits.$inferSelect;
+export type NewCalculationAudit = typeof calculationAudits.$inferInsert;
+
+export type ManualReviewQueue = typeof manualReviewQueue.$inferSelect;
+export type NewManualReviewQueue = typeof manualReviewQueue.$inferInsert;
+
 export type AuditLog = typeof auditLog.$inferSelect;
 export type NewAuditLog = typeof auditLog.$inferInsert;
 

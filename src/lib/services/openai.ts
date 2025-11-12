@@ -13,11 +13,13 @@ import {
 } from '$lib/types/prescription';
 import { getConfig } from '$lib/utils/config';
 import { getCacheService } from './cache';
+import { getAuditService } from './audit';
 
 export class OpenAIService {
   private client: OpenAI;
   private config;
   private cache;
+  private audit;
 
   constructor() {
     this.config = getConfig().openai;
@@ -25,6 +27,7 @@ export class OpenAIService {
       apiKey: this.config.apiKey,
     });
     this.cache = getCacheService();
+    this.audit = getAuditService();
   }
 
   /**
@@ -32,13 +35,20 @@ export class OpenAIService {
    * Achieves 95%+ accuracy through prompt engineering and Zod validation
    * Includes 7-day caching for performance
    */
-  async normalizeMedication(input: MedicationInput): Promise<NormalizedMedication> {
+  async normalizeMedication(input: MedicationInput, userId?: string): Promise<NormalizedMedication> {
     const prescriptionText = this.formatInputForPrompt(input);
+
+    // Log prescription submission
+    await this.audit.logPrescriptionSubmission(prescriptionText, { userId });
 
     // Check cache first (7-day TTL)
     const cached = await this.cache.getCachedOpenAIResponse(prescriptionText);
     if (cached) {
       console.log('[OpenAI] Cache hit for prescription');
+
+      // Log cached parse result
+      await this.audit.logPrescriptionParsed(prescriptionText, cached, 0, { userId });
+
       return {
         drugName: cached.drugName,
         strength: cached.strength,
@@ -74,11 +84,15 @@ export class OpenAIService {
       const message = completion.choices[0]?.message;
 
       if (!message?.parsed) {
-        throw new Error('Failed to parse OpenAI response: No parsed data returned');
+        const error = new Error('Failed to parse OpenAI response: No parsed data returned');
+        await this.audit.logParsingError(prescriptionText, error, { userId });
+        throw error;
       }
 
       if (message.refusal) {
-        throw new Error(`OpenAI refused to process: ${message.refusal}`);
+        const error = new Error(`OpenAI refused to process: ${message.refusal}`);
+        await this.audit.logParsingError(prescriptionText, error, { userId });
+        throw error;
       }
 
       // Convert PrescriptionParse to NormalizedMedication
@@ -94,6 +108,9 @@ export class OpenAIService {
       // Cache the result (7-day TTL)
       await this.cache.cacheOpenAIResponse(prescriptionText, parsed);
 
+      // Log successful parsing with confidence score
+      await this.audit.logPrescriptionParsed(prescriptionText, parsed, processingTime, { userId });
+
       console.log(`[OpenAI] Normalized prescription in ${processingTime}ms (confidence: ${parsed.confidence})`);
 
       return normalized;
@@ -101,10 +118,17 @@ export class OpenAIService {
       // Check for specific finish reasons
       if (error instanceof Error) {
         if (error.message.includes('length_limit') || error.message.includes('max_tokens')) {
-          throw new Error('Response truncated due to length limits');
+          const wrappedError = new Error('Response truncated due to length limits');
+          await this.audit.logParsingError(prescriptionText, wrappedError, { userId });
+          throw wrappedError;
         } else if (error.message.includes('content_filter')) {
-          throw new Error('Response blocked by content filter');
+          const wrappedError = new Error('Response blocked by content filter');
+          await this.audit.logParsingError(prescriptionText, wrappedError, { userId });
+          throw wrappedError;
         }
+
+        // Log generic parsing error
+        await this.audit.logParsingError(prescriptionText, error, { userId });
       }
 
       console.error('[OpenAI] Normalization error:', error);
@@ -117,17 +141,26 @@ export class OpenAIService {
    * Used for free-text prescription inputs
    * Includes 7-day caching
    */
-  async parsePrescription(prescriptionText: string): Promise<PrescriptionParse> {
+  async parsePrescription(prescriptionText: string, userId?: string): Promise<PrescriptionParse> {
+    // Log prescription submission
+    await this.audit.logPrescriptionSubmission(prescriptionText, { userId });
+
     // Check cache first
     const cached = await this.cache.getCachedOpenAIResponse(prescriptionText);
     if (cached) {
       console.log('[OpenAI] Cache hit for prescription parsing');
+
+      // Log cached parse result
+      await this.audit.logPrescriptionParsed(prescriptionText, cached, 0, { userId });
+
       return cached;
     }
 
     const prompt = this.buildPrescriptionParsingPrompt(prescriptionText);
 
     try {
+      const startTime = Date.now();
+
       const completion = await this.client.chat.completions.parse({
         model: this.config.model,
         messages: [
@@ -139,21 +172,32 @@ export class OpenAIService {
         max_tokens: this.config.maxTokens,
       });
 
+      const processingTime = Date.now() - startTime;
       const message = completion.choices[0]?.message;
 
       if (!message?.parsed) {
-        throw new Error('Failed to parse prescription');
+        const error = new Error('Failed to parse prescription');
+        await this.audit.logParsingError(prescriptionText, error, { userId });
+        throw error;
       }
 
       if (message.refusal) {
-        throw new Error(`OpenAI refused: ${message.refusal}`);
+        const error = new Error(`OpenAI refused: ${message.refusal}`);
+        await this.audit.logParsingError(prescriptionText, error, { userId });
+        throw error;
       }
 
       // Cache the result
       await this.cache.cacheOpenAIResponse(prescriptionText, message.parsed);
 
+      // Log successful parsing
+      await this.audit.logPrescriptionParsed(prescriptionText, message.parsed, processingTime, { userId });
+
       return message.parsed;
     } catch (error) {
+      if (error instanceof Error) {
+        await this.audit.logParsingError(prescriptionText, error, { userId });
+      }
       console.error('[OpenAI] Prescription parsing error:', error);
       throw error;
     }

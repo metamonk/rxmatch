@@ -40,6 +40,7 @@ export interface NDCPackage {
   packageQuantity: number;
   packageUnit: string;
   isActive: boolean;
+  expirationDate?: string; // YYYYMMDD format from FDA
 }
 
 export interface CalculationResult {

@@ -7,6 +7,7 @@
 import type { NDCPackage } from '$lib/types';
 import { getConfig } from '$lib/utils/config';
 import { getCacheService, type CacheService } from './cache';
+import { getAuditService, type AuditService } from './audit';
 
 interface FDANDCResult {
 	product_ndc: string;
@@ -32,6 +33,20 @@ interface FDANDCResult {
 	product_type?: string;
 }
 
+/**
+ * Helper to format expiration date from YYYYMMDD to readable format
+ */
+export function formatExpirationDate(expirationDate?: string): string | null {
+	if (!expirationDate) return null;
+
+	const year = expirationDate.substring(0, 4);
+	const month = expirationDate.substring(4, 6);
+	const day = expirationDate.substring(6, 8);
+
+	const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+	return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
 interface FDAResponse {
 	meta: {
 		results: {
@@ -48,17 +63,22 @@ const FDA_CACHE_TTL = 43200; // 12 hours in seconds
 export class FDAService {
 	private baseUrl: string;
 	private cache: CacheService;
+	private audit: AuditService;
 
 	constructor() {
 		this.baseUrl = getConfig().apis.fda.baseUrl;
 		this.cache = getCacheService();
+		this.audit = getAuditService();
 	}
 
 	/**
 	 * Search for NDC packages by NDC code
 	 * Results are cached for 12 hours
 	 */
-	async searchByNDC(ndc: string): Promise<NDCPackage[]> {
+	async searchByNDC(ndc: string, userId?: string): Promise<NDCPackage[]> {
+		const startTime = Date.now();
+		const prescriptionText = `NDC Search: ${ndc}`;
+
 		// Normalize NDC (remove dashes)
 		const normalizedNDC = ndc.replace(/-/g, '');
 
@@ -66,6 +86,9 @@ export class FDAService {
 		const cacheKey = `fda:ndc:${normalizedNDC}`;
 		const cached = await this.cache.get<NDCPackage[]>(cacheKey);
 		if (cached) {
+			const processingTime = Date.now() - startTime;
+			const ndcCodes = cached.map(pkg => pkg.ndc);
+			await this.audit.logFDANDCSearch(prescriptionText, null, ndcCodes, processingTime, { userId });
 			return cached;
 		}
 
@@ -82,6 +105,9 @@ export class FDAService {
 
 			if (!response.ok) {
 				console.error(`FDA API error: ${response.status} ${response.statusText}`);
+				const processingTime = Date.now() - startTime;
+				const error = new Error(`FDA API error: ${response.status} ${response.statusText}`);
+				await this.audit.logAPIError('FDA', prescriptionText, error, { userId, processingTime });
 				return [];
 			}
 
@@ -91,8 +117,16 @@ export class FDAService {
 			// Cache the results (12-hour TTL)
 			await this.cache.set(cacheKey, packages, FDA_CACHE_TTL);
 
+			const processingTime = Date.now() - startTime;
+			const ndcCodes = packages.map(pkg => pkg.ndc);
+			await this.audit.logFDANDCSearch(prescriptionText, null, ndcCodes, processingTime, { userId });
+
 			return packages;
 		} catch (error) {
+			const processingTime = Date.now() - startTime;
+			if (error instanceof Error) {
+				await this.audit.logAPIError('FDA', prescriptionText, error, { userId, processingTime });
+			}
 			console.error('FDA API fetch error:', error);
 			return [];
 		}
@@ -103,11 +137,17 @@ export class FDAService {
 	 * Can search by generic name or brand name
 	 * Results are cached for 12 hours
 	 */
-	async searchByDrugName(drugName: string, limit = 100): Promise<NDCPackage[]> {
+	async searchByDrugName(drugName: string, limit = 100, userId?: string): Promise<NDCPackage[]> {
+		const startTime = Date.now();
+		const prescriptionText = `Drug Name Search: ${drugName}`;
+
 		// Check cache first
 		const cacheKey = `fda:drug:${drugName.toLowerCase()}`;
 		const cached = await this.cache.get<NDCPackage[]>(cacheKey);
 		if (cached) {
+			const processingTime = Date.now() - startTime;
+			const ndcCodes = cached.map(pkg => pkg.ndc);
+			await this.audit.logFDANDCSearch(prescriptionText, null, ndcCodes, processingTime, { userId });
 			return cached;
 		}
 
@@ -125,6 +165,9 @@ export class FDAService {
 
 			if (!response.ok) {
 				console.error(`FDA API error: ${response.status} ${response.statusText}`);
+				const processingTime = Date.now() - startTime;
+				const error = new Error(`FDA API error: ${response.status} ${response.statusText}`);
+				await this.audit.logAPIError('FDA', prescriptionText, error, { userId, processingTime });
 				return [];
 			}
 
@@ -134,8 +177,16 @@ export class FDAService {
 			// Cache the results (12-hour TTL)
 			await this.cache.set(cacheKey, packages, FDA_CACHE_TTL);
 
+			const processingTime = Date.now() - startTime;
+			const ndcCodes = packages.map(pkg => pkg.ndc);
+			await this.audit.logFDANDCSearch(prescriptionText, null, ndcCodes, processingTime, { userId });
+
 			return packages;
 		} catch (error) {
+			const processingTime = Date.now() - startTime;
+			if (error instanceof Error) {
+				await this.audit.logAPIError('FDA', prescriptionText, error, { userId, processingTime });
+			}
 			console.error('FDA API fetch error:', error);
 			return [];
 		}
@@ -145,11 +196,17 @@ export class FDAService {
 	 * Search by RxCUI with fallback to drug name
 	 * This is the preferred search method when RxCUI is available
 	 */
-	async searchByRxCUI(rxcui: string, drugNameFallback?: string): Promise<NDCPackage[]> {
+	async searchByRxCUI(rxcui: string, drugNameFallback?: string, userId?: string): Promise<NDCPackage[]> {
+		const startTime = Date.now();
+		const prescriptionText = `RxCUI Search: ${rxcui}${drugNameFallback ? ` (${drugNameFallback})` : ''}`;
+
 		// Check cache first
 		const cacheKey = `fda:rxcui:${rxcui}`;
 		const cached = await this.cache.get<NDCPackage[]>(cacheKey);
 		if (cached) {
+			const processingTime = Date.now() - startTime;
+			const ndcCodes = cached.map(pkg => pkg.ndc);
+			await this.audit.logFDANDCSearch(prescriptionText, rxcui, ndcCodes, processingTime, { userId });
 			return cached;
 		}
 
@@ -166,9 +223,13 @@ export class FDAService {
 
 			if (!response.ok) {
 				console.error(`FDA API error: ${response.status} ${response.statusText}`);
+				const processingTime = Date.now() - startTime;
+				const error = new Error(`FDA API error: ${response.status} ${response.statusText}`);
+				await this.audit.logAPIError('FDA', prescriptionText, error, { userId, processingTime });
+
 				// Fallback to drug name search if RxCUI search fails
 				if (drugNameFallback) {
-					return this.searchByDrugName(drugNameFallback);
+					return this.searchByDrugName(drugNameFallback, 100, userId);
 				}
 				return [];
 			}
@@ -179,12 +240,21 @@ export class FDAService {
 			// Cache the results (12-hour TTL)
 			await this.cache.set(cacheKey, packages, FDA_CACHE_TTL);
 
+			const processingTime = Date.now() - startTime;
+			const ndcCodes = packages.map(pkg => pkg.ndc);
+			await this.audit.logFDANDCSearch(prescriptionText, rxcui, ndcCodes, processingTime, { userId });
+
 			return packages;
 		} catch (error) {
+			const processingTime = Date.now() - startTime;
+			if (error instanceof Error) {
+				await this.audit.logAPIError('FDA', prescriptionText, error, { userId, processingTime });
+			}
 			console.error('FDA API fetch error:', error);
+
 			// Fallback to drug name search
 			if (drugNameFallback) {
-				return this.searchByDrugName(drugNameFallback);
+				return this.searchByDrugName(drugNameFallback, 100, userId);
 			}
 			return [];
 		}
@@ -233,7 +303,8 @@ export class FDAService {
 					packageDescription: pkg.description,
 					packageQuantity: this.extractQuantityFromDescription(pkg.description),
 					packageUnit: this.extractUnitFromDescription(pkg.description),
-					isActive
+					isActive,
+					expirationDate: result.listing_expiration_date
 				});
 			}
 		}
