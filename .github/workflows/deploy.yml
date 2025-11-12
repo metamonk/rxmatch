@@ -85,7 +85,7 @@ jobs:
             --platform managed \
             --allow-unauthenticated \
             --set-env-vars="NODE_ENV=production,REDIS_HOST=${{ secrets.REDIS_HOST }},REDIS_PORT=6379,REDIS_DB=0,OPENAI_MODEL=gpt-4o-mini,FEATURE_CACHE_ENABLED=true" \
-            --update-secrets="OPENAI_API_KEY=OPENAI_API_KEY:latest,REDIS_PASSWORD=REDIS_PASSWORD:latest" \
+            --update-secrets="OPENAI_API_KEY=OPENAI_API_KEY:latest,REDIS_PASSWORD=REDIS_PASSWORD:latest,DATABASE_URL=DATABASE_URL:latest" \
             --memory 512Mi \
             --cpu 1 \
             --min-instances 0 \
