@@ -1,0 +1,17 @@
+node_modules
+.env
+.env.*
+!.env.example
+.git
+.github
+.vscode
+.taskmaster
+*.md
+!README.md
+.DS_Store
+dist
+build
+.svelte-kit
+coverage
+*.log
+pnpm-debug.log*

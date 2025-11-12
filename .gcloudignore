@@ -1,0 +1,28 @@
+# Ignore everything
+*
+
+# But include these files
+!package.json
+!pnpm-lock.yaml
+!src/**
+!static/**
+!svelte.config.js
+!vite.config.ts
+!tsconfig.json
+!tailwind.config.js
+
+# Exclude development files
+.env
+.env.*
+!.env.example
+node_modules
+.git
+.github
+.vscode
+.taskmaster
+*.md
+.DS_Store
+dist
+.svelte-kit
+coverage
+*.log
