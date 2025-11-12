@@ -98,10 +98,13 @@ export class OpenAIService {
 
       return normalized;
     } catch (error) {
-      if (error instanceof OpenAI.LengthFinishReasonError) {
-        throw new Error('Response truncated due to length limits');
-      } else if (error instanceof OpenAI.ContentFilterFinishReasonError) {
-        throw new Error('Response blocked by content filter');
+      // Check for specific finish reasons
+      if (error instanceof Error) {
+        if (error.message.includes('length_limit') || error.message.includes('max_tokens')) {
+          throw new Error('Response truncated due to length limits');
+        } else if (error.message.includes('content_filter')) {
+          throw new Error('Response blocked by content filter');
+        }
       }
 
       console.error('[OpenAI] Normalization error:', error);
