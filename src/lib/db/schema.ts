@@ -18,15 +18,93 @@ import {
 import { createId } from '@paralleldrive/cuid2';
 
 // Enums
+export const userRoleEnum = pgEnum('user_role', ['pharmacist', 'admin', 'user']);
+
+export const calculationStatusEnum = pgEnum('calculation_status', ['pending', 'approved', 'rejected']);
+
 export const reviewStatusEnum = pgEnum('review_status', [
-  'PENDING',
-  'IN_REVIEW',
-  'APPROVED',
-  'REJECTED',
-  'NEEDS_INFO',
+  'pending',
+  'in_review',
+  'completed',
 ]);
 
-export const priorityEnum = pgEnum('priority', ['LOW', 'MEDIUM', 'HIGH', 'URGENT']);
+export const priorityEnum = pgEnum('priority', ['low', 'medium', 'high']);
+
+// Users table (Task 10)
+export const users = pgTable(
+  'users',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    email: text('email').notNull().unique(),
+    role: userRoleEnum('role').default('user').notNull(),
+    firebaseUid: text('firebase_uid').unique(),
+    displayName: text('display_name'),
+    photoUrl: text('photo_url'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
+    lastLoginAt: timestamp('last_login_at'),
+    isActive: boolean('is_active').default(true).notNull(),
+  },
+  (table) => ({
+    emailIdx: uniqueIndex('users_email_idx').on(table.email),
+    firebaseUidIdx: uniqueIndex('users_firebase_uid_idx').on(table.firebaseUid),
+    roleIdx: index('users_role_idx').on(table.role),
+  })
+);
+
+// Calculation audits table (Task 10 & 11)
+export const calculationAudits = pgTable(
+  'calculation_audits',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    userId: text('user_id').references(() => users.id, { onDelete: 'set null' }),
+    prescriptionText: text('prescription_text').notNull(),
+    parsedResult: jsonb('parsed_result'),
+    confidenceScore: real('confidence_score'),
+    selectedPackages: jsonb('selected_packages'),
+    status: calculationStatusEnum('status').default('pending').notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    rxcui: text('rxcui'),
+    ndcCodes: jsonb('ndc_codes'),
+    processingTime: integer('processing_time'),
+  },
+  (table) => ({
+    userIdIdx: index('calculation_audits_user_id_idx').on(table.userId),
+    statusIdx: index('calculation_audits_status_idx').on(table.status),
+    createdAtIdx: index('calculation_audits_created_at_idx').on(table.createdAt),
+    rxcuiIdx: index('calculation_audits_rxcui_idx').on(table.rxcui),
+  })
+);
+
+// Manual review queue table (Task 10 & 12)
+export const manualReviewQueue = pgTable(
+  'manual_review_queue',
+  {
+    id: text('id')
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    calculationId: text('calculation_id')
+      .references(() => calculationAudits.id, { onDelete: 'cascade' })
+      .notNull(),
+    assignedTo: text('assigned_to').references(() => users.id, { onDelete: 'set null' }),
+    priority: priorityEnum('priority').default('medium').notNull(),
+    status: reviewStatusEnum('status').default('pending').notNull(),
+    notes: text('notes'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  },
+  (table) => ({
+    calculationIdIdx: index('manual_review_queue_calculation_id_idx').on(table.calculationId),
+    assignedToIdx: index('manual_review_queue_assigned_to_idx').on(table.assignedTo),
+    statusIdx: index('manual_review_queue_status_idx').on(table.status),
+    priorityIdx: index('manual_review_queue_priority_idx').on(table.priority),
+    createdAtIdx: index('manual_review_queue_created_at_idx').on(table.createdAt),
+  })
+);
 
 // Audit log for all prescription lookups (Task 11)
 export const auditLog = pgTable(
