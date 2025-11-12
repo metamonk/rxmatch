@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { NDCPackage } from '$lib/types/medication';
-  import { formatExpirationDate } from '$lib/services/fda';
+  import { formatExpirationDate } from '$lib/utils/fda';
 
   interface Props {
     package: NDCPackage;

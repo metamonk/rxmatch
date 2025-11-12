@@ -25,10 +25,8 @@ export interface DatabaseConfig {
 }
 
 export interface RedisConfig {
-  host: string;
-  port: number;
-  password?: string;
-  db: number;
+  url: string;
+  token: string;
   ttl: {
     cache: number; // 7 days for general cache
     rxcui: number; // 30 days for RxCUI mappings

@@ -3,7 +3,7 @@
   import type { PrescriptionParse } from '$lib/types/prescription';
   import { exportFullResults } from '$lib/utils/export';
   import InactiveNDCConfirmationModal from './InactiveNDCConfirmationModal.svelte';
-  import { formatExpirationDate } from '$lib/services/fda';
+  import { formatExpirationDate } from '$lib/utils/fda';
 
   interface Props {
     packages: NDCPackage[];

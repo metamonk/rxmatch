@@ -1,23 +1,31 @@
 /**
  * Redis cache service with 7-day TTL for OpenAI responses
  * Implements subtask 2.4 - Set Up Redis Caching
+ * Uses Upstash Redis (REST-based, serverless-friendly)
  */
 
-import Redis from 'ioredis';
+import { Redis } from '@upstash/redis';
 import { getConfig } from '$lib/utils/config';
 import type { PrescriptionParse } from '$lib/types/prescription';
+import { LRUCache } from '$lib/utils/lru-cache';
+import { getPerformanceMonitor } from '$lib/utils/performance';
 
 export class CacheService {
   private client: Redis | null = null;
   private config;
   private isConnected = false;
+  private l1Cache: LRUCache<any>;
+  private monitor;
 
   constructor() {
     this.config = getConfig().redis;
+    // L1 cache: 500 items, 5 minutes TTL for hot data
+    this.l1Cache = new LRUCache<any>(500, 300000);
+    this.monitor = getPerformanceMonitor();
   }
 
   /**
-   * Initialize Redis connection
+   * Initialize Upstash Redis client
    * Called lazily on first use
    */
   private async connect(): Promise<void> {
@@ -26,38 +34,16 @@ export class CacheService {
     }
 
     try {
+      // Upstash Redis uses REST API - no traditional connection needed
       this.client = new Redis({
-        host: this.config.host,
-        port: this.config.port,
-        password: this.config.password,
-        db: this.config.db,
-        retryStrategy: (times) => {
-          const delay = Math.min(times * 50, 2000);
-          return delay;
-        },
-        maxRetriesPerRequest: 3,
-        enableReadyCheck: true,
-        lazyConnect: false,
+        url: this.config.url,
+        token: this.config.token,
       });
 
-      this.client.on('error', (err) => {
-        console.error('[Redis] Connection error:', err);
-        this.isConnected = false;
-      });
-
-      this.client.on('connect', () => {
-        console.log('[Redis] Connected successfully');
-        this.isConnected = true;
-      });
-
-      this.client.on('ready', () => {
-        console.log('[Redis] Ready to accept commands');
-        this.isConnected = true;
-      });
-
-      // Wait for connection
+      // Test connection with ping
       await this.client.ping();
       this.isConnected = true;
+      console.log('[Redis] Upstash Redis connected successfully');
     } catch (error) {
       console.error('[Redis] Failed to connect:', error);
       this.client = null;
@@ -67,21 +53,45 @@ export class CacheService {
   }
 
   /**
-   * Get value from cache
+   * Get value from cache (L1 -> L2 Redis)
    */
   async get<T>(key: string): Promise<T | null> {
     if (!getConfig().features.cacheEnabled) {
       return null;
     }
 
+    const startTime = Date.now();
+
     try {
+      // Try L1 cache first (in-memory)
+      const l1Value = this.l1Cache.get(key);
+      if (l1Value !== null) {
+        const duration = Date.now() - startTime;
+        console.log(`[Cache] L1 hit for ${key} (${duration}ms)`);
+        return l1Value as T;
+      }
+
+      // Try L2 cache (Redis)
       await this.connect();
       if (!this.client) return null;
 
       const value = await this.client.get(key);
-      if (!value) return null;
+      if (!value) {
+        const duration = Date.now() - startTime;
+        console.log(`[Cache] MISS for ${key} (${duration}ms)`);
+        return null;
+      }
 
-      return JSON.parse(value) as T;
+      // Upstash returns the value, parse if it's a string
+      const parsed = typeof value === 'string' ? JSON.parse(value) as T : value as T;
+
+      // Promote to L1 cache
+      this.l1Cache.set(key, parsed);
+
+      const duration = Date.now() - startTime;
+      console.log(`[Cache] L2 hit for ${key} (${duration}ms)`);
+
+      return parsed;
     } catch (error) {
       console.error(`[Redis] Error getting key ${key}:`, error);
       return null;
@@ -89,7 +99,7 @@ export class CacheService {
   }
 
   /**
-   * Set value in cache with optional TTL
+   * Set value in cache with optional TTL (L1 + L2)
    */
   async set(key: string, value: unknown, ttlSeconds?: number): Promise<void> {
     if (!getConfig().features.cacheEnabled) {
@@ -97,6 +107,10 @@ export class CacheService {
     }
 
     try {
+      // Set in L1 cache (in-memory)
+      this.l1Cache.set(key, value);
+
+      // Set in L2 cache (Redis)
       await this.connect();
       if (!this.client) return;
 
@@ -216,10 +230,11 @@ export class CacheService {
 
   /**
    * Close Redis connection
+   * Note: Upstash Redis uses REST API, no connection to close
    */
   async disconnect(): Promise<void> {
     if (this.client) {
-      await this.client.quit();
+      // Upstash REST client doesn't need explicit disconnect
       this.client = null;
       this.isConnected = false;
       console.log('[Redis] Disconnected');
@@ -240,6 +255,30 @@ export class CacheService {
       console.error('[Redis] Health check failed:', error);
       return false;
     }
+  }
+
+  /**
+   * Get L1 cache statistics
+   */
+  getL1CacheStats() {
+    return this.l1Cache.stats();
+  }
+
+  /**
+   * Clear L1 cache
+   */
+  clearL1Cache(): void {
+    this.l1Cache.clear();
+    console.log('[Cache] L1 cache cleared');
+  }
+
+  /**
+   * Cleanup expired L1 cache entries
+   */
+  cleanupL1Cache(): number {
+    const removed = this.l1Cache.cleanup();
+    console.log(`[Cache] Cleaned up ${removed} expired L1 entries`);
+    return removed;
   }
 }
 

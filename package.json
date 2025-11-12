@@ -34,8 +34,8 @@
 	},
 	"dependencies": {
 		"@paralleldrive/cuid2": "^3.0.4",
+		"@upstash/redis": "^1.35.6",
 		"drizzle-orm": "^0.44.7",
-		"ioredis": "^5.8.2",
 		"openai": "^6.8.1",
 		"postgres": "^3.4.7",
 		"zod": "^4.1.12",

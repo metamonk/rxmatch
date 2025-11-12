@@ -5,6 +5,7 @@
 
 import type { PrescriptionParse } from '$lib/types/prescription';
 import type { NDCPackage, PackageRecommendation, CalculationResult } from '$lib/types/medication';
+import { getPackageSelectionService } from '$lib/services/packageSelection';
 
 export const mockPrescriptionParse: PrescriptionParse = {
   drugName: 'Lisinopril',
@@ -102,38 +103,37 @@ export const mockNDCPackages: NDCPackage[] = [
   }
 ];
 
-export const mockPackageRecommendations: PackageRecommendation[] = [
-  {
-    ndc: '0378-0335-93',
-    packageDescription: '90 TABLET in 1 BOTTLE',
-    quantityNeeded: 90,
-    packagesRequired: 1,
-    totalUnits: 90,
-    overage: 0,
-    costEfficiency: 'optimal',
-    labelerName: 'Mylan Pharmaceuticals Inc.'
-  },
-  {
-    ndc: '0378-0335-01',
-    packageDescription: '100 TABLET in 1 BOTTLE',
-    quantityNeeded: 90,
-    packagesRequired: 1,
-    totalUnits: 100,
-    overage: 10,
-    costEfficiency: 'acceptable',
-    labelerName: 'Mylan Pharmaceuticals Inc.'
-  },
-  {
-    ndc: '68180-0514-01',
-    packageDescription: '30 TABLET in 1 BOTTLE',
-    quantityNeeded: 90,
-    packagesRequired: 3,
-    totalUnits: 90,
-    overage: 0,
-    costEfficiency: 'optimal',
-    labelerName: 'Lupin Pharmaceuticals, Inc.'
+/**
+ * Generate package recommendations using the package selection algorithm
+ */
+function generatePackageRecommendations(
+  quantity: number,
+  packages: NDCPackage[]
+): PackageRecommendation[] {
+  const service = getPackageSelectionService();
+
+  try {
+    const selection = service.selectOptimalPackages(quantity, packages);
+    return service.generateRecommendations(selection, quantity);
+  } catch (error) {
+    console.warn('Failed to generate recommendations with algorithm:', error);
+    // Fallback to simple recommendations
+    return packages.map(pkg => ({
+      ndc: pkg.ndc,
+      packageDescription: pkg.packageDescription,
+      quantityNeeded: quantity,
+      packagesRequired: Math.ceil(quantity / pkg.packageQuantity),
+      totalUnits: Math.ceil(quantity / pkg.packageQuantity) * pkg.packageQuantity,
+      overage: (Math.ceil(quantity / pkg.packageQuantity) * pkg.packageQuantity) - quantity,
+      costEfficiency: 'acceptable' as const,
+      labelerName: pkg.labelerName,
+      brandName: pkg.brandName
+    }));
   }
-];
+}
+
+export const mockPackageRecommendations: PackageRecommendation[] =
+  generatePackageRecommendations(90, mockNDCPackages);
 
 export const mockCalculationResult: CalculationResult = {
   input: {

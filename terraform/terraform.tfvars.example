@@ -1,0 +1,11 @@
+# GCP Monitoring Configuration Variables
+# Copy this file to terraform.tfvars and fill in your values
+
+# GCP Project Configuration
+project_id   = "your-gcp-project-id"
+region       = "us-central1"
+service_name = "rxmatch"
+
+# Alert Email Configuration
+alert_email           = "alerts@yourdomain.com"
+alert_email_secondary = "on-call@yourdomain.com"  # Optional: Leave empty if not needed

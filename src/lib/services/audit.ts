@@ -13,7 +13,7 @@ import {
   updateCalculationAuditStatus,
   type NewCalculationAudit,
   type CalculationAudit
-} from '$lib/db/services/calculationAudits';
+} from '$lib/server/db/services/calculationAudits';
 import type { PrescriptionParse } from '$lib/types/prescription';
 import type { NDCPackage } from '$lib/types/medication';
 

@@ -36,10 +36,8 @@ export function loadConfig(): AppConfig {
       poolMax: getEnvNumber('DATABASE_POOL_MAX', 10)
     },
     redis: {
-      host: getEnvVar('REDIS_HOST', 'localhost'),
-      port: getEnvNumber('REDIS_PORT', 6379),
-      password: process.env.REDIS_PASSWORD,
-      db: getEnvNumber('REDIS_DB', 0),
+      url: getEnvVar('REDIS_URL'),
+      token: getEnvVar('REDIS_TOKEN'),
       ttl: {
         cache: getEnvNumber('REDIS_TTL_CACHE', 604800), // 7 days
         rxcui: getEnvNumber('REDIS_TTL_RXCUI', 2592000) // 30 days
