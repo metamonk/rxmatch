@@ -75,3 +75,12 @@ tsconfig.tsbuildinfo
 # PRD and sensitive docs (optional - uncomment if keeping private)
 # PRD.md
 # fields.yaml
+
+# Agent-generated meta-documentation
+*_SUMMARY.md
+*_ARCHITECTURE.md
+*_TESTING.md
+*_IMPLEMENTATION_SUMMARY.md
+TASK_*.md
+REVIEW_QUEUE.md
+QUICK_START_*.md

@@ -8,12 +8,15 @@
  * - Implements security best practices for healthcare data
  */
 
+// Load environment variables from .env file
+import 'dotenv/config';
+
 import type { Handle } from '@sveltejs/kit';
 
 export const handle: Handle = async ({ event, resolve }) => {
 	// Get the response from SvelteKit
 	const response = await resolve(event, {
-		filterSerializedResponseHeaders(name) {
+		filterSerializedResponseHeaders() {
 			// Allow all headers through for security headers to work
 			return true;
 		}
