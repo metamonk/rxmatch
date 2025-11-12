@@ -1,5 +1,12 @@
 # Claude Code Instructions
 
+## Git Commit Policy
+**NEVER include AI attribution in commit messages.**
+- ❌ Do NOT add "Generated with Claude Code"
+- ❌ Do NOT add "Co-Authored-By: Claude"
+- ✅ Use standard conventional commit format only
+- ✅ Keep commits professional and attribution-free
+
 ## Context7 MCP - PRIORITY TOOL
 **ALWAYS use Context7 MCP for dependency and code lookups when available.**
 
