@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { ReviewQueueItemWithDetails } from '$lib/types/review';
   import type { PrescriptionParse } from '$lib/types/prescription';
-  import { Card, Badge } from '$lib/components/ui';
+  import { Card, Badge, ProgressBar } from '$lib/components/ui';
 
   interface Props {
     item: ReviewQueueItemWithDetails;
@@ -73,14 +73,21 @@
   <!-- Parsed Prescription Data -->
   {#if parsedResult}
     <Card variant="elevated" padding="md" class="animate-slide-in [animation-delay:50ms]">
-      <div class="flex items-center justify-between mb-6">
-        <h2 class="h3">Parsed Prescription Data</h2>
-        <div class="flex items-center gap-2">
-          <span class="text-sm text-surface-600-300 font-medium">Confidence:</span>
+      <div class="mb-6">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="h3">Parsed Prescription Data</h2>
           <span class="text-lg font-bold {getConfidenceClass(audit?.confidenceScore)}">
             {audit?.confidenceScore ? `${(audit.confidenceScore * 100).toFixed(1)}%` : 'N/A'}
           </span>
         </div>
+        {#if audit?.confidenceScore}
+          <div class="space-y-2">
+            <div class="flex items-center justify-between text-sm">
+              <span class="text-surface-600-300 font-medium">Confidence Score</span>
+            </div>
+            <ProgressBar value={audit.confidenceScore * 100} size="md" />
+          </div>
+        {/if}
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

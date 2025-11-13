@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { ReviewQueueItemWithDetails } from '$lib/types/review';
-  import { Button, Card, Badge } from '$lib/components/ui';
+  import { Button, Card, Badge, ProgressBar } from '$lib/components/ui';
 
   interface Props {
     items: ReviewQueueItemWithDetails[];
@@ -112,9 +112,16 @@
                   {/if}
                 </td>
                 <td>
-                  <div class="text-sm font-bold {getConfidenceClass(audit?.confidenceScore)}">
-                    {audit?.confidenceScore ? `${(audit.confidenceScore * 100).toFixed(0)}%` : 'N/A'}
-                  </div>
+                  {#if audit?.confidenceScore}
+                    <div class="space-y-1 min-w-[100px]">
+                      <div class="text-sm font-bold {getConfidenceClass(audit.confidenceScore)}">
+                        {(audit.confidenceScore * 100).toFixed(0)}%
+                      </div>
+                      <ProgressBar value={audit.confidenceScore * 100} size="sm" />
+                    </div>
+                  {:else}
+                    <span class="text-sm text-surface-500-400">N/A</span>
+                  {/if}
                 </td>
                 <td>
                   <div class="text-sm">

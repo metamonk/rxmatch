@@ -1,6 +1,6 @@
 <script lang="ts">
   import { PrescriptionInput, ParsedResults, PackageSelector } from '$lib/components';
-  import { Button, Card } from '$lib/components/ui';
+  import { Button, Card, Logo } from '$lib/components/ui';
   import {
     mockPrescriptionParse,
     mockPrescriptionParseWithCorrections,
@@ -93,13 +93,16 @@
   <header class="bg-surface-50-900 border-b border-surface-200-700 shadow-lg animate-fade-in">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div class="flex items-center justify-between">
-        <div>
-          <h1 class="h1 gradient-heading !text-4xl">
-            RxMatch
-          </h1>
-          <p class="mt-2 text-sm text-surface-600-300 font-medium">
-            AI-Powered NDC Packaging & Quantity Calculator
-          </p>
+        <div class="flex items-center gap-4">
+          <Logo size="xl" variant="gradient" />
+          <div>
+            <h1 class="h1 gradient-heading !text-4xl">
+              RxMatch
+            </h1>
+            <p class="mt-2 text-sm text-surface-600-300 font-medium">
+              AI-Powered NDC Packaging & Quantity Calculator
+            </p>
+          </div>
         </div>
         {#if currentStep !== 'input'}
           <Button variant="ghost" onclick={handleStartOver}>

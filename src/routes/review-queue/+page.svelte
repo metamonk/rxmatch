@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import { QueueList, QueueFilters } from '$lib/components/review';
-  import { Button, Card, Badge } from '$lib/components/ui';
+  import { Button, Card, Badge, Logo } from '$lib/components/ui';
   import type { ReviewQueueItemWithDetails, ReviewQueueFilters } from '$lib/types/review';
 
   let items = $state<ReviewQueueItemWithDetails[]>([]);
@@ -71,13 +71,16 @@
   <header class="bg-surface-50-900 border-b border-surface-200-700 shadow-lg animate-fade-in">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div class="flex items-center justify-between">
-        <div>
-          <h1 class="h1 gradient-heading !text-4xl">
-            Manual Review Queue
-          </h1>
-          <p class="mt-2 text-sm text-surface-600-300 font-medium">
-            Review and approve low-confidence prescription calculations
-          </p>
+        <div class="flex items-center gap-4">
+          <Logo size="lg" variant="default" />
+          <div>
+            <h1 class="h1 gradient-heading !text-4xl">
+              Manual Review Queue
+            </h1>
+            <p class="mt-2 text-sm text-surface-600-300 font-medium">
+              Review and approve low-confidence prescription calculations
+            </p>
+          </div>
         </div>
         <Button variant="ghost" onclick={() => goto('/')}>
           ← Back to Home
