@@ -9,6 +9,4 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
-<div data-theme="terminus">
-	{@render children()}
-</div>
+{@render children()}
