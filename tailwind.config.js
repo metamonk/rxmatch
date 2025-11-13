@@ -1,6 +1,3 @@
-import { skeleton } from '@skeletonlabs/skeleton/plugin';
-import * as themes from '@skeletonlabs/skeleton/themes';
-
 /** @type {import('tailwindcss').Config} */
 export default {
 	content: [
@@ -19,9 +16,5 @@ export default {
 			}
 		}
 	},
-	plugins: [
-		skeleton({
-			themes: [themes.terminus]
-		})
-	]
+	plugins: []
 };
