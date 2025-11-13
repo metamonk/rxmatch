@@ -1,4 +1,6 @@
 @import 'tailwindcss';
+@import '@skeletonlabs/skeleton';
+@import '@skeletonlabs/skeleton/themes/terminus';
 
 /* Custom animations for micro-interactions */
 @keyframes fade-in {
