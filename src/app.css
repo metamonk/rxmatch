@@ -1,5 +1,4 @@
 @import 'tailwindcss';
-@import '@skeletonlabs/skeleton/styles/all.css';
 
 /* Custom animations for micro-interactions */
 @keyframes fade-in {

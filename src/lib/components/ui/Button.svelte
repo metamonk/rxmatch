@@ -41,7 +41,6 @@
 	{disabled}
 	class={buttonClass}
 	onclick={onclick}
-	{...$$restProps}
 >
 	{@render children?.()}
 </button>

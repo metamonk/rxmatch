@@ -107,7 +107,7 @@
     <form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }} class="space-y-4">
       <!-- Textarea Input -->
       <div class="form-group">
-        <label class="label mb-3">
+        <label for="prescription-text" class="label mb-3">
           <span class="text-base font-semibold">
             Prescription Details
             <span class="text-error-500" aria-label="required">*</span>
@@ -134,7 +134,7 @@
 
       <!-- File Upload -->
       <div class="form-group">
-        <label class="label mb-3">
+        <label for="prescription-file" class="label mb-3">
           <span class="text-base font-semibold">Or Upload Prescription File</span>
         </label>
         <input

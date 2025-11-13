@@ -31,6 +31,6 @@
 	const badgeClass = `${variantClasses[variant]} ${sizeClasses[size]} transition-all duration-250 ${className}`;
 </script>
 
-<span class={badgeClass} {...$$restProps}>
+<span class={badgeClass}>
 	{@render children?.()}
 </span>

@@ -34,6 +34,6 @@
 	const cardClass = `${variantClasses[variant]} ${paddingClasses[padding]} ${hoverClass} animate-fade-in ${className}`;
 </script>
 
-<div class={cardClass} {...$$restProps}>
+<div class={cardClass}>
 	{@render children?.()}
 </div>

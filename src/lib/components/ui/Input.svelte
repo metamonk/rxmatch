@@ -37,7 +37,6 @@
 			class={inputClass}
 			{oninput}
 			{onblur}
-			{...$$restProps}
 		/>
 		{#if error}
 			<span class="text-error-500 text-sm mt-1 animate-slide-in">{error}</span>
@@ -52,7 +51,6 @@
 		class={inputClass}
 		{oninput}
 		{onblur}
-		{...$$restProps}
 	/>
 	{#if error}
 		<span class="text-error-500 text-sm mt-1 animate-slide-in">{error}</span>
