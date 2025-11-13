@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { ReviewQueueFilters } from '$lib/types/review';
+  import { Button, Card } from '$lib/components/ui';
 
   interface Props {
     filters: ReviewQueueFilters;
@@ -49,18 +50,18 @@
   );
 </script>
 
-<div class="bg-white rounded-lg border border-gray-200 p-4">
+<Card variant="elevated" padding="md" class="animate-slide-in">
   <div class="flex flex-wrap items-center gap-4">
     <!-- Status Filter -->
     <div class="flex-shrink-0">
-      <label for="status-filter" class="block text-sm font-medium text-gray-700 mb-1">
-        Status
+      <label for="status-filter" class="label mb-2">
+        <span class="text-sm font-semibold">Status</span>
       </label>
       <select
         id="status-filter"
         onchange={handleStatusChange}
         value={filters.status || 'all'}
-        class="block w-40 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
+        class="select w-40 text-sm"
       >
         <option value="all">All Statuses</option>
         <option value="pending">Pending</option>
@@ -71,14 +72,14 @@
 
     <!-- Priority Filter -->
     <div class="flex-shrink-0">
-      <label for="priority-filter" class="block text-sm font-medium text-gray-700 mb-1">
-        Priority
+      <label for="priority-filter" class="label mb-2">
+        <span class="text-sm font-semibold">Priority</span>
       </label>
       <select
         id="priority-filter"
         onchange={handlePriorityChange}
         value={filters.priority || 'all'}
-        class="block w-40 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
+        class="select w-40 text-sm"
       >
         <option value="all">All Priorities</option>
         <option value="high">High</option>
@@ -89,28 +90,29 @@
 
     <!-- Unassigned Only Toggle -->
     <div class="flex items-center pt-6">
-      <input
-        id="unassigned-only"
-        type="checkbox"
-        checked={filters.unassignedOnly || false}
-        onchange={handleUnassignedToggle}
-        class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-      />
-      <label for="unassigned-only" class="ml-2 text-sm text-gray-700">
-        Unassigned only
+      <label class="label flex items-center gap-2 cursor-pointer">
+        <input
+          id="unassigned-only"
+          type="checkbox"
+          checked={filters.unassignedOnly || false}
+          onchange={handleUnassignedToggle}
+          class="checkbox"
+        />
+        <span class="text-sm font-medium">Unassigned only</span>
       </label>
     </div>
 
     <!-- Clear Filters -->
     {#if hasActiveFilters}
       <div class="flex items-center pt-6">
-        <button
+        <Button
+          variant="ghost"
+          size="sm"
           onclick={handleClearFilters}
-          class="text-sm text-blue-600 hover:text-blue-800 font-medium"
         >
           Clear filters
-        </button>
+        </Button>
       </div>
     {/if}
   </div>
-</div>
+</Card>
