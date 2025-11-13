@@ -19,21 +19,23 @@
 		children
 	}: Props = $props();
 
+	const baseClasses = 'inline-flex items-center justify-center gap-2 font-medium rounded-lg transition-all duration-250 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed';
+
 	const variantClasses = {
-		primary: 'btn variant-filled-primary',
-		secondary: 'btn variant-filled-secondary',
-		tertiary: 'btn variant-filled-tertiary',
-		ghost: 'btn variant-ghost-surface',
-		danger: 'btn variant-filled-error'
+		primary: 'bg-[var(--color-primary-500)] text-[var(--color-primary-contrast-500)] hover:bg-[var(--color-primary-600)] shadow-md hover:shadow-lg',
+		secondary: 'bg-[var(--color-secondary-500)] text-[var(--color-secondary-contrast-500)] hover:bg-[var(--color-secondary-600)] shadow-md hover:shadow-lg',
+		tertiary: 'bg-[var(--color-tertiary-500)] text-[var(--color-tertiary-contrast-500)] hover:bg-[var(--color-tertiary-600)] shadow-md hover:shadow-lg',
+		ghost: 'bg-transparent text-[var(--color-surface-950)] dark:text-[var(--color-surface-50)] hover:bg-[var(--color-surface-200)] dark:hover:bg-[var(--color-surface-800)]',
+		danger: 'bg-red-600 text-white hover:bg-red-700 shadow-md hover:shadow-lg'
 	};
 
 	const sizeClasses = {
-		sm: 'btn-sm',
-		md: 'btn-md',
-		lg: 'btn-lg'
+		sm: 'px-3 py-1.5 text-sm',
+		md: 'px-4 py-2 text-base',
+		lg: 'px-6 py-3 text-lg'
 	};
 
-	const buttonClass = `${variantClasses[variant]} ${sizeClasses[size]} transition-all duration-250 hover:scale-[1.02] active:scale-[0.98] ${className}`;
+	const buttonClass = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`;
 </script>
 
 <button

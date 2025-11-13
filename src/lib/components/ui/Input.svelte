@@ -23,12 +23,17 @@
 		onblur
 	}: Props = $props();
 
-	const inputClass = `input transition-all duration-250 ${error ? 'input-error' : ''} ${className}`;
+	const baseInputClass = 'w-full px-4 py-2 rounded-lg border transition-all duration-250 focus:outline-none focus:ring-2';
+	const normalClass = 'border-[var(--color-surface-300)] dark:border-[var(--color-surface-700)] bg-white dark:bg-[var(--color-surface-900)] text-[var(--color-surface-950)] dark:text-[var(--color-surface-50)] focus:ring-[var(--color-primary-500)] focus:border-[var(--color-primary-500)]';
+	const errorClass = 'border-red-500 focus:ring-red-500 focus:border-red-500';
+	const disabledClass = 'opacity-50 cursor-not-allowed';
+
+	const inputClass = `${baseInputClass} ${error ? errorClass : normalClass} ${disabled ? disabledClass : ''} ${className}`;
 </script>
 
 {#if label}
-	<label class="label">
-		<span class="text-sm font-medium">{label}</span>
+	<label class="block">
+		<span class="text-sm font-medium mb-2 block text-[var(--color-surface-950)] dark:text-[var(--color-surface-50)]">{label}</span>
 		<input
 			{type}
 			bind:value
@@ -39,7 +44,7 @@
 			{onblur}
 		/>
 		{#if error}
-			<span class="text-error-500 text-sm mt-1 animate-slide-in">{error}</span>
+			<span class="text-red-600 text-sm mt-1 block animate-slide-in">{error}</span>
 		{/if}
 	</label>
 {:else}
@@ -53,6 +58,6 @@
 		{onblur}
 	/>
 	{#if error}
-		<span class="text-error-500 text-sm mt-1 animate-slide-in">{error}</span>
+		<span class="text-red-600 text-sm mt-1 block animate-slide-in">{error}</span>
 	{/if}
 {/if}
