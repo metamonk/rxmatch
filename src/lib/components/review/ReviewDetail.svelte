@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { ReviewQueueItemWithDetails } from '$lib/types/review';
   import type { PrescriptionParse } from '$lib/types/prescription';
+  import { Card, Badge } from '$lib/components/ui';
 
   interface Props {
     item: ReviewQueueItemWithDetails;
@@ -13,10 +14,10 @@
   const selectedPackages = $derived(audit?.selectedPackages as any[] | null);
 
   function getConfidenceClass(score: number | null | undefined): string {
-    if (!score) return 'text-gray-500';
-    if (score >= 0.8) return 'text-green-600';
-    if (score >= 0.6) return 'text-yellow-600';
-    return 'text-red-600';
+    if (!score) return 'text-surface-500-400';
+    if (score >= 0.8) return 'text-success-500';
+    if (score >= 0.6) return 'text-warning-500';
+    return 'text-error-500';
   }
 
   function formatDate(date: Date | null | undefined): string {
@@ -28,54 +29,54 @@
 
 <div class="space-y-6">
   <!-- Header with Metadata -->
-  <div class="bg-white rounded-lg border border-gray-200 p-6">
+  <Card variant="elevated" padding="md" class="animate-fade-in">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       <div>
-        <h3 class="text-xs font-medium text-gray-500 uppercase tracking-wider">Priority</h3>
-        <p class="mt-1 text-sm font-semibold text-gray-900">
+        <h3 class="text-xs font-semibold text-surface-600-300 uppercase tracking-wider mb-2">Priority</h3>
+        <p class="text-sm font-bold">
           {item.reviewQueueItem.priority}
         </p>
       </div>
       <div>
-        <h3 class="text-xs font-medium text-gray-500 uppercase tracking-wider">Status</h3>
-        <p class="mt-1 text-sm font-semibold text-gray-900">
+        <h3 class="text-xs font-semibold text-surface-600-300 uppercase tracking-wider mb-2">Status</h3>
+        <p class="text-sm font-bold">
           {item.reviewQueueItem.status.replace('_', ' ')}
         </p>
       </div>
       <div>
-        <h3 class="text-xs font-medium text-gray-500 uppercase tracking-wider">Created</h3>
-        <p class="mt-1 text-sm text-gray-900">
+        <h3 class="text-xs font-semibold text-surface-600-300 uppercase tracking-wider mb-2">Created</h3>
+        <p class="text-sm">
           {formatDate(item.reviewQueueItem.createdAt)}
         </p>
       </div>
       <div>
-        <h3 class="text-xs font-medium text-gray-500 uppercase tracking-wider">Assigned To</h3>
-        <p class="mt-1 text-sm text-gray-900">
+        <h3 class="text-xs font-semibold text-surface-600-300 uppercase tracking-wider mb-2">Assigned To</h3>
+        <p class="text-sm">
           {#if item.assignedUser}
             {item.assignedUser.displayName || item.assignedUser.email}
           {:else}
-            <span class="text-gray-500 italic">Unassigned</span>
+            <span class="text-surface-500-400 italic">Unassigned</span>
           {/if}
         </p>
       </div>
     </div>
-  </div>
+  </Card>
 
   <!-- Original Prescription Text -->
-  <div class="bg-white rounded-lg border border-gray-200 p-6">
-    <h2 class="text-lg font-semibold text-gray-900 mb-4">Original Prescription Text</h2>
-    <div class="bg-gray-50 rounded-md p-4 font-mono text-sm text-gray-800 whitespace-pre-wrap">
+  <Card variant="elevated" padding="md" class="animate-slide-in">
+    <h2 class="h3 mb-4">Original Prescription Text</h2>
+    <div class="variant-soft-surface rounded-container-token p-4 font-mono text-sm whitespace-pre-wrap">
       {audit?.prescriptionText || 'No prescription text available'}
     </div>
-  </div>
+  </Card>
 
   <!-- Parsed Prescription Data -->
   {#if parsedResult}
-    <div class="bg-white rounded-lg border border-gray-200 p-6">
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="text-lg font-semibold text-gray-900">Parsed Prescription Data</h2>
+    <Card variant="elevated" padding="md" class="animate-slide-in [animation-delay:50ms]">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="h3">Parsed Prescription Data</h2>
         <div class="flex items-center gap-2">
-          <span class="text-sm text-gray-500">Confidence:</span>
+          <span class="text-sm text-surface-600-300 font-medium">Confidence:</span>
           <span class="text-lg font-bold {getConfidenceClass(audit?.confidenceScore)}">
             {audit?.confidenceScore ? `${(audit.confidenceScore * 100).toFixed(1)}%` : 'N/A'}
           </span>
@@ -84,129 +85,134 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <h3 class="text-sm font-medium text-gray-700 mb-2">Drug Name</h3>
-          <p class="text-gray-900">{parsedResult.drugName}</p>
+          <h3 class="text-sm font-semibold text-surface-600-300 mb-2">Drug Name</h3>
+          <p class="font-medium">{parsedResult.drugName}</p>
         </div>
 
         <div>
-          <h3 class="text-sm font-medium text-gray-700 mb-2">Strength</h3>
-          <p class="text-gray-900">{parsedResult.strength}</p>
+          <h3 class="text-sm font-semibold text-surface-600-300 mb-2">Strength</h3>
+          <p class="font-medium">{parsedResult.strength}</p>
         </div>
 
         <div>
-          <h3 class="text-sm font-medium text-gray-700 mb-2">Form</h3>
-          <p class="text-gray-900">{parsedResult.form}</p>
+          <h3 class="text-sm font-semibold text-surface-600-300 mb-2">Form</h3>
+          <p class="font-medium">{parsedResult.form}</p>
         </div>
 
         <div>
-          <h3 class="text-sm font-medium text-gray-700 mb-2">Quantity</h3>
-          <p class="text-gray-900">{parsedResult.quantity}</p>
+          <h3 class="text-sm font-semibold text-surface-600-300 mb-2">Quantity</h3>
+          <p class="font-medium">{parsedResult.quantity}</p>
         </div>
 
         {#if parsedResult.sig}
           <div class="md:col-span-2">
-            <h3 class="text-sm font-medium text-gray-700 mb-2">Sig (Instructions)</h3>
-            <p class="text-gray-900">{parsedResult.sig}</p>
+            <h3 class="text-sm font-semibold text-surface-600-300 mb-2">Sig (Instructions)</h3>
+            <p class="font-medium">{parsedResult.sig}</p>
           </div>
         {/if}
 
         {#if parsedResult.daysSupply}
           <div>
-            <h3 class="text-sm font-medium text-gray-700 mb-2">Days Supply</h3>
-            <p class="text-gray-900">{parsedResult.daysSupply} days</p>
+            <h3 class="text-sm font-semibold text-surface-600-300 mb-2">Days Supply</h3>
+            <p class="font-medium">{parsedResult.daysSupply} days</p>
           </div>
         {/if}
 
         {#if parsedResult.normalizations?.originalDrugName}
-          <div class="md:col-span-2 bg-yellow-50 border border-yellow-200 rounded-md p-3">
-            <h3 class="text-sm font-medium text-yellow-800 mb-1">Normalizations Applied</h3>
-            <p class="text-sm text-yellow-700">
-              Original: <span class="font-mono">{parsedResult.normalizations.originalDrugName}</span>
-            </p>
-            {#if parsedResult.normalizations.spellingCorrections && parsedResult.normalizations.spellingCorrections.length > 0}
-              <p class="text-sm text-yellow-700 mt-1">
-                Corrections: {parsedResult.normalizations.spellingCorrections.join(', ')}
+          <div class="md:col-span-2 alert variant-soft-warning">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+            </svg>
+            <div class="alert-message">
+              <h3 class="h4 mb-1">Normalizations Applied</h3>
+              <p class="text-sm">
+                Original: <span class="font-mono">{parsedResult.normalizations.originalDrugName}</span>
               </p>
-            {/if}
+              {#if parsedResult.normalizations.spellingCorrections && parsedResult.normalizations.spellingCorrections.length > 0}
+                <p class="text-sm mt-1">
+                  Corrections: {parsedResult.normalizations.spellingCorrections.join(', ')}
+                </p>
+              {/if}
+            </div>
           </div>
         {/if}
       </div>
-    </div>
+    </Card>
   {/if}
 
   <!-- RxNorm/RxCUI Information -->
   {#if audit?.rxcui}
-    <div class="bg-white rounded-lg border border-gray-200 p-6">
-      <h2 class="text-lg font-semibold text-gray-900 mb-4">RxNorm Information</h2>
-      <div class="space-y-3">
+    <Card variant="elevated" padding="md" class="animate-slide-in [animation-delay:100ms]">
+      <h2 class="h3 mb-4">RxNorm Information</h2>
+      <div class="space-y-4">
         <div>
-          <h3 class="text-sm font-medium text-gray-700">RxCUI</h3>
-          <p class="text-gray-900 font-mono">{audit.rxcui}</p>
+          <h3 class="text-sm font-semibold text-surface-600-300 mb-2">RxCUI</h3>
+          <p class="font-mono font-medium">{audit.rxcui}</p>
         </div>
         {#if audit.ndcCodes && Array.isArray(audit.ndcCodes) && audit.ndcCodes.length > 0}
           <div>
-            <h3 class="text-sm font-medium text-gray-700 mb-2">NDC Codes Found</h3>
+            <h3 class="text-sm font-semibold text-surface-600-300 mb-3">NDC Codes Found</h3>
             <div class="flex flex-wrap gap-2">
               {#each audit.ndcCodes as ndc}
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">
+                <Badge variant="primary" size="sm">
                   {ndc}
-                </span>
+                </Badge>
               {/each}
             </div>
           </div>
         {/if}
       </div>
-    </div>
+    </Card>
   {/if}
 
   <!-- Selected Packages -->
   {#if selectedPackages && selectedPackages.length > 0}
-    <div class="bg-white rounded-lg border border-gray-200 p-6">
-      <h2 class="text-lg font-semibold text-gray-900 mb-4">Selected Packages</h2>
+    <Card variant="elevated" padding="md" class="animate-slide-in [animation-delay:150ms]">
+      <h2 class="h3 mb-4">Selected Packages</h2>
       <div class="space-y-4">
         {#each selectedPackages as pkg}
-          <div class="bg-gray-50 rounded-md p-4 border border-gray-200">
+          <Card variant="outlined" padding="sm" class="variant-soft-surface">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
-                <h4 class="text-sm font-medium text-gray-700">NDC</h4>
-                <p class="text-gray-900 font-mono">{pkg.ndc}</p>
+                <h4 class="text-sm font-semibold text-surface-600-300 mb-1">NDC</h4>
+                <p class="font-mono font-medium">{pkg.ndc}</p>
               </div>
               <div>
-                <h4 class="text-sm font-medium text-gray-700">Labeler</h4>
-                <p class="text-gray-900">{pkg.labelerName}</p>
+                <h4 class="text-sm font-semibold text-surface-600-300 mb-1">Labeler</h4>
+                <p class="font-medium">{pkg.labelerName}</p>
               </div>
               <div>
-                <h4 class="text-sm font-medium text-gray-700">Package Description</h4>
-                <p class="text-gray-900">{pkg.packageDescription}</p>
+                <h4 class="text-sm font-semibold text-surface-600-300 mb-1">Package Description</h4>
+                <p class="font-medium">{pkg.packageDescription}</p>
               </div>
               <div>
-                <h4 class="text-sm font-medium text-gray-700">Quantity</h4>
-                <p class="text-gray-900">{pkg.packageQuantity} {pkg.packageUnit}</p>
+                <h4 class="text-sm font-semibold text-surface-600-300 mb-1">Quantity</h4>
+                <p class="font-medium">{pkg.packageQuantity} {pkg.packageUnit}</p>
               </div>
             </div>
-          </div>
+          </Card>
         {/each}
       </div>
-    </div>
+    </Card>
   {/if}
 
   <!-- Processing Time -->
   {#if audit?.processingTime}
-    <div class="bg-white rounded-lg border border-gray-200 p-6">
-      <h2 class="text-lg font-semibold text-gray-900 mb-2">Processing Metrics</h2>
-      <p class="text-sm text-gray-600">
-        Processing Time: <span class="font-medium text-gray-900">{audit.processingTime}ms</span>
+    <Card variant="elevated" padding="md" class="animate-slide-in [animation-delay:200ms]">
+      <h2 class="h3 mb-3">Processing Metrics</h2>
+      <p class="text-sm text-surface-600-300">
+        Processing Time: <span class="font-semibold">{audit.processingTime}ms</span>
       </p>
-    </div>
+    </Card>
   {/if}
 
   <!-- Existing Notes -->
   {#if item.reviewQueueItem.notes}
-    <div class="bg-white rounded-lg border border-gray-200 p-6">
-      <h2 class="text-lg font-semibold text-gray-900 mb-4">Review Notes</h2>
-      <div class="bg-gray-50 rounded-md p-4 text-sm text-gray-800 whitespace-pre-wrap">
+    <Card variant="elevated" padding="md" class="animate-slide-in [animation-delay:250ms]">
+      <h2 class="h3 mb-4">Review Notes</h2>
+      <div class="variant-soft-surface rounded-container-token p-4 text-sm whitespace-pre-wrap">
         {item.reviewQueueItem.notes}
       </div>
-    </div>
+    </Card>
   {/if}
 </div>
