@@ -61,7 +61,7 @@
         id="status-filter"
         onchange={handleStatusChange}
         value={filters.status || 'all'}
-        class="select w-40 text-sm"
+        class="w-40 text-sm px-3 py-2 rounded-lg border border-[var(--color-surface-300)] dark:border-[var(--color-surface-700)] bg-white dark:bg-[var(--color-surface-900)] text-[var(--color-surface-950)] dark:text-[var(--color-surface-50)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-500)] transition-all duration-250"
       >
         <option value="all">All Statuses</option>
         <option value="pending">Pending</option>
@@ -79,7 +79,7 @@
         id="priority-filter"
         onchange={handlePriorityChange}
         value={filters.priority || 'all'}
-        class="select w-40 text-sm"
+        class="w-40 text-sm px-3 py-2 rounded-lg border border-[var(--color-surface-300)] dark:border-[var(--color-surface-700)] bg-white dark:bg-[var(--color-surface-900)] text-[var(--color-surface-950)] dark:text-[var(--color-surface-50)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-500)] transition-all duration-250"
       >
         <option value="all">All Priorities</option>
         <option value="high">High</option>
@@ -96,7 +96,7 @@
           type="checkbox"
           checked={filters.unassignedOnly || false}
           onchange={handleUnassignedToggle}
-          class="checkbox"
+          class="w-4 h-4 rounded border-[var(--color-surface-300)] dark:border-[var(--color-surface-700)] text-[var(--color-primary-500)] focus:ring-2 focus:ring-[var(--color-primary-500)] bg-white dark:bg-[var(--color-surface-900)] transition-all duration-250 cursor-pointer"
         />
         <span class="text-sm font-medium">Unassigned only</span>
       </label>

@@ -119,7 +119,12 @@
           onkeydown={handleKeydown}
           placeholder="Example: Lisinopril 10mg tablets, take 1 tablet by mouth daily, 90 tablets"
           rows="6"
-          class="textarea transition-all duration-250 resize-y min-h-[150px] {validationError ? 'input-error' : ''}"
+          class="w-full px-4 py-3 rounded-lg border transition-all duration-250 resize-y min-h-[150px]
+                 focus:outline-none focus:ring-2
+                 {validationError
+                   ? 'border-red-500 focus:ring-red-500 focus:border-red-500'
+                   : 'border-[var(--color-surface-300)] dark:border-[var(--color-surface-700)] bg-white dark:bg-[var(--color-surface-900)] text-[var(--color-surface-950)] dark:text-[var(--color-surface-50)] focus:ring-[var(--color-primary-500)] focus:border-[var(--color-primary-500)]'}
+                 disabled:opacity-50 disabled:cursor-not-allowed"
           aria-describedby="prescription-help"
           aria-invalid={!!validationError}
           disabled={isSubmitting}
@@ -128,7 +133,7 @@
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          Include drug name, strength, form, quantity, and directions. Press <kbd class="kbd kbd-sm">Ctrl+Enter</kbd> to submit.
+          Include drug name, strength, form, quantity, and directions. Press <kbd class="px-2 py-1 text-xs font-semibold rounded bg-[var(--color-surface-200)] dark:bg-[var(--color-surface-800)] text-[var(--color-surface-950)] dark:text-[var(--color-surface-50)] border border-[var(--color-surface-300)] dark:border-[var(--color-surface-700)]">Ctrl+Enter</kbd> to submit.
         </p>
       </div>
 
@@ -143,7 +148,19 @@
           type="file"
           accept=".txt,.pdf,.jpg,.jpeg,.png"
           onchange={handleFileChange}
-          class="input transition-all duration-250"
+          class="block w-full text-sm text-[var(--color-surface-950)] dark:text-[var(--color-surface-50)]
+                 file:mr-4 file:py-2 file:px-4
+                 file:rounded-lg file:border-0
+                 file:text-sm file:font-medium
+                 file:bg-[var(--color-primary-500)] file:text-[var(--color-primary-contrast-500)]
+                 hover:file:bg-[var(--color-primary-600)]
+                 file:cursor-pointer file:transition-all file:duration-250
+                 cursor-pointer
+                 border border-[var(--color-surface-300)] dark:border-[var(--color-surface-700)]
+                 rounded-lg p-2
+                 bg-white dark:bg-[var(--color-surface-900)]
+                 transition-all duration-250
+                 disabled:opacity-50 disabled:cursor-not-allowed"
           aria-describedby="file-help"
           disabled={isSubmitting}
         />
