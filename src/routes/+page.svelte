@@ -1,5 +1,6 @@
 <script lang="ts">
   import { PrescriptionInput, ParsedResults, PackageSelector } from '$lib/components';
+  import { Button, Card } from '$lib/components/ui';
   import {
     mockPrescriptionParse,
     mockPrescriptionParseWithCorrections,
@@ -87,76 +88,73 @@
   <meta name="description" content="Parse prescriptions and find optimal NDC packages" />
 </svelte:head>
 
-<div class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
+<div class="min-h-screen">
   <!-- Header -->
-  <header class="bg-white shadow-sm border-b border-gray-200">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+  <header class="bg-surface-50-900 border-b border-surface-200-700 shadow-lg animate-fade-in">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="text-3xl font-bold text-gray-900">
+          <h1 class="h1 gradient-heading !text-4xl">
             RxMatch
           </h1>
-          <p class="mt-1 text-sm text-gray-600">
-            Prescription Package Matcher
+          <p class="mt-2 text-sm text-surface-600-300 font-medium">
+            AI-Powered NDC Packaging & Quantity Calculator
           </p>
         </div>
         {#if currentStep !== 'input'}
-          <button
-            onclick={handleStartOver}
-            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-          >
+          <Button variant="ghost" onclick={handleStartOver}>
             ← Start Over
-          </button>
+          </Button>
         {/if}
       </div>
     </div>
   </header>
 
   <!-- Progress Steps -->
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <nav aria-label="Progress">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
+    <nav aria-label="Progress" class="variant-soft-surface p-6 rounded-container-token">
       <ol class="flex items-center justify-center gap-4 md:gap-8">
-        <li class="flex items-center gap-2">
-          <div class="flex items-center justify-center w-10 h-10 rounded-full {currentStep === 'input' ? 'bg-blue-600 text-white' : 'bg-green-500 text-white'}">
+        <li class="flex items-center gap-3 animate-slide-in">
+          <div class="flex items-center justify-center w-12 h-12 rounded-full transition-all duration-300 {currentStep === 'input' ? 'variant-filled-primary scale-110' : 'variant-filled-success'}">
             {#if currentStep === 'input'}
-              <span class="text-lg font-semibold">1</span>
+              <span class="text-xl font-bold">1</span>
             {:else}
-              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+              <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
               </svg>
             {/if}
           </div>
-          <span class="text-sm font-medium {currentStep === 'input' ? 'text-blue-600' : 'text-gray-900'}">
+          <span class="text-base font-semibold {currentStep === 'input' ? 'text-primary-500' : 'text-surface-600-300'}">
             Input Prescription
           </span>
         </li>
 
-        <div class="hidden md:block w-16 h-1 {currentStep !== 'input' ? 'bg-green-500' : 'bg-gray-300'}"></div>
+        <div class="hidden md:block w-20 h-2 rounded-full transition-all duration-500 {currentStep !== 'input' ? 'bg-success-500' : 'bg-surface-300-600'}"></div>
 
-        <li class="flex items-center gap-2">
-          <div class="flex items-center justify-center w-10 h-10 rounded-full {currentStep === 'results' ? 'bg-blue-600 text-white' : currentStep === 'packages' ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-600'}">
+        <li class="flex items-center gap-3 animate-slide-in [animation-delay:100ms]">
+          <div class="flex items-center justify-center w-12 h-12 rounded-full transition-all duration-300 {currentStep === 'results' ? 'variant-filled-primary scale-110' : currentStep === 'packages' ? 'variant-filled-success' : 'variant-soft-surface'}">
             {#if currentStep === 'results'}
-              <span class="text-lg font-semibold">2</span>
+              <span class="text-xl font-bold">2</span>
             {:else if currentStep === 'packages'}
-              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+              <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
               </svg>
             {:else}
-              <span class="text-lg font-semibold">2</span>
+              <span class="text-xl font-bold">2</span>
             {/if}
           </div>
-          <span class="text-sm font-medium {currentStep === 'results' ? 'text-blue-600' : currentStep === 'packages' ? 'text-gray-900' : 'text-gray-500'}">
+          <span class="text-base font-semibold {currentStep === 'results' ? 'text-primary-500' : currentStep === 'packages' ? 'text-surface-600-300' : 'text-surface-400-500'}">
             Review Results
           </span>
         </li>
 
-        <div class="hidden md:block w-16 h-1 {currentStep === 'packages' ? 'bg-green-500' : 'bg-gray-300'}"></div>
+        <div class="hidden md:block w-20 h-2 rounded-full transition-all duration-500 {currentStep === 'packages' ? 'bg-success-500' : 'bg-surface-300-600'}"></div>
 
-        <li class="flex items-center gap-2">
-          <div class="flex items-center justify-center w-10 h-10 rounded-full {currentStep === 'packages' ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600'}">
-            <span class="text-lg font-semibold">3</span>
+        <li class="flex items-center gap-3 animate-slide-in [animation-delay:200ms]">
+          <div class="flex items-center justify-center w-12 h-12 rounded-full transition-all duration-300 {currentStep === 'packages' ? 'variant-filled-primary scale-110' : 'variant-soft-surface'}">
+            <span class="text-xl font-bold">3</span>
           </div>
-          <span class="text-sm font-medium {currentStep === 'packages' ? 'text-blue-600' : 'text-gray-500'}">
+          <span class="text-base font-semibold {currentStep === 'packages' ? 'text-primary-500' : 'text-surface-400-500'}">
             Select Package
           </span>
         </li>
@@ -168,21 +166,28 @@
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
     <!-- Processing Overlay -->
     {#if isProcessing}
-      <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white rounded-lg p-8 max-w-sm w-full mx-4 text-center">
-          <svg class="animate-spin h-12 w-12 mx-auto text-blue-600 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">Processing...</h3>
-          <p class="text-gray-600 text-sm">
-            {#if currentStep === 'input'}
-              Parsing prescription with AI
-            {:else if currentStep === 'results'}
-              Searching for NDC packages
-            {/if}
-          </p>
-        </div>
+      <div class="modal-backdrop fixed inset-0 flex items-center justify-center z-50">
+        <Card variant="elevated" padding="lg" class="max-w-sm w-full mx-4 text-center animate-fade-in shadow-2xl">
+          <div class="flex flex-col items-center gap-4">
+            <div class="relative">
+              <svg class="animate-spin h-16 w-16 text-primary-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <div class="absolute inset-0 bg-gradient-to-r from-primary-500 to-secondary-500 opacity-20 blur-xl animate-pulse"></div>
+            </div>
+            <div class="space-y-2">
+              <h3 class="h3 font-bold">Processing...</h3>
+              <p class="text-surface-600-300">
+                {#if currentStep === 'input'}
+                  Parsing prescription with AI
+                {:else if currentStep === 'results'}
+                  Searching for NDC packages
+                {/if}
+              </p>
+            </div>
+          </div>
+        </Card>
       </div>
     {/if}
 
@@ -196,35 +201,37 @@
 
     <!-- Step 2: Results -->
     {#if currentStep === 'results' && parsedResult}
-      <div class="space-y-6">
+      <div class="space-y-6 animate-fade-in">
         <ParsedResults result={parsedResult} />
 
         <div class="text-center">
-          <button
-            onclick={handleFindPackages}
-            class="px-8 py-4 bg-blue-600 text-white text-lg font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors shadow-lg"
-          >
+          <Button variant="primary" size="lg" onclick={handleFindPackages} class="px-8 shadow-xl">
             Find NDC Packages
             <svg class="inline-block w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>
-          </button>
+          </Button>
         </div>
       </div>
     {/if}
 
     <!-- Step 3: Packages -->
     {#if currentStep === 'packages' && calculationResult}
-      <div class="space-y-6">
+      <div class="space-y-6 animate-fade-in">
         <!-- Show parsed results in condensed form -->
         {#if parsedResult}
-          <div class="bg-white rounded-lg shadow p-4 border border-gray-200">
-            <h3 class="text-sm font-medium text-gray-700 mb-2">Prescription Summary</h3>
-            <p class="text-gray-900">
-              <strong>{parsedResult.drugName}</strong> {parsedResult.strength} {parsedResult.form}
-              - {parsedResult.quantity} units
+          <Card variant="outlined" padding="md" class="border-primary-500/30 bg-primary-50/10">
+            <h3 class="h4 mb-3 flex items-center gap-2">
+              <svg class="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Prescription Summary
+            </h3>
+            <p class="text-lg">
+              <strong class="font-bold text-primary-500">{parsedResult.drugName}</strong>
+              <span class="text-surface-600-300">{parsedResult.strength} {parsedResult.form} - {parsedResult.quantity} units</span>
             </p>
-          </div>
+          </Card>
         {/if}
 
         <PackageSelector
@@ -240,22 +247,15 @@
   </main>
 
   <!-- Footer -->
-  <footer class="bg-white border-t border-gray-200 mt-auto">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      <p class="text-center text-sm text-gray-500">
-        RxMatch - Prescription Package Matcher
-        <span class="mx-2">|</span>
-        <button type="button" class="text-blue-600 hover:text-blue-800">Privacy Policy</button>
-        <span class="mx-2">|</span>
-        <button type="button" class="text-blue-600 hover:text-blue-800">Terms of Service</button>
+  <footer class="bg-surface-100-800 border-t border-surface-200-700 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <p class="text-center text-sm text-surface-600-300 font-medium">
+        RxMatch - AI-Powered NDC Packaging & Quantity Calculator
+        <span class="mx-3">•</span>
+        <button type="button" class="anchor transition-colors duration-250">Privacy Policy</button>
+        <span class="mx-3">•</span>
+        <button type="button" class="anchor transition-colors duration-250">Terms of Service</button>
       </p>
     </div>
   </footer>
 </div>
-
-<style>
-  :global(body) {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  }
-</style>
