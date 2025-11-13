@@ -1,6 +1,6 @@
 <script lang="ts">
   import { PrescriptionInput, ParsedResults, PackageSelector } from '$lib/components';
-  import { Button, Card, Logo } from '$lib/components/ui';
+  import { Button, Card, Logo, ThemeToggle } from '$lib/components/ui';
   import {
     mockPrescriptionParse,
     mockPrescriptionParseWithCorrections,
@@ -96,19 +96,22 @@
         <div class="flex items-center gap-4">
           <Logo size="xl" variant="gradient" />
           <div>
-            <h1 class="h1 gradient-heading !text-4xl">
+            <h1 class="text-4xl font-bold gradient-heading">
               RxMatch
             </h1>
-            <p class="mt-2 text-sm text-surface-600-300 font-medium">
+            <p class="mt-2 text-sm text-[var(--color-surface-600)] dark:text-[var(--color-surface-300)] font-medium">
               AI-Powered NDC Packaging & Quantity Calculator
             </p>
           </div>
         </div>
-        {#if currentStep !== 'input'}
-          <Button variant="ghost" onclick={handleStartOver}>
-            ← Start Over
-          </Button>
-        {/if}
+        <div class="flex items-center gap-3">
+          <ThemeToggle />
+          {#if currentStep !== 'input'}
+            <Button variant="ghost" onclick={handleStartOver}>
+              ← Start Over
+            </Button>
+          {/if}
+        </div>
       </div>
     </div>
   </header>
@@ -118,7 +121,7 @@
     <nav aria-label="Progress" class="variant-soft-surface p-6 rounded-container-token">
       <ol class="flex items-center justify-center gap-4 md:gap-8">
         <li class="flex items-center gap-3 animate-slide-in">
-          <div class="flex items-center justify-center w-12 h-12 rounded-full transition-all duration-300 {currentStep === 'input' ? 'variant-filled-primary scale-110' : 'variant-filled-success'}">
+          <div class="flex items-center justify-center w-12 h-12 rounded-full transition-all duration-300 {currentStep === 'input' ? 'bg-[var(--color-primary-500)] text-[var(--color-primary-contrast-500)] scale-110' : 'bg-green-600 text-white'}">
             {#if currentStep === 'input'}
               <span class="text-xl font-bold">1</span>
             {:else}
@@ -127,15 +130,15 @@
               </svg>
             {/if}
           </div>
-          <span class="text-base font-semibold {currentStep === 'input' ? 'text-primary-500' : 'text-surface-600-300'}">
+          <span class="text-base font-semibold {currentStep === 'input' ? 'text-primary-500' : 'text-[var(--color-surface-600)] dark:text-[var(--color-surface-300)]'}">
             Input Prescription
           </span>
         </li>
 
-        <div class="hidden md:block w-20 h-2 rounded-full transition-all duration-500 {currentStep !== 'input' ? 'bg-success-500' : 'bg-surface-300-600'}"></div>
+        <div class="hidden md:block w-20 h-2 rounded-full transition-all duration-500 {currentStep !== 'input' ? 'bg-green-600' : 'bg-[var(--color-surface-300)] dark:bg-[var(--color-surface-600)]'}"></div>
 
         <li class="flex items-center gap-3 animate-slide-in [animation-delay:100ms]">
-          <div class="flex items-center justify-center w-12 h-12 rounded-full transition-all duration-300 {currentStep === 'results' ? 'variant-filled-primary scale-110' : currentStep === 'packages' ? 'variant-filled-success' : 'variant-soft-surface'}">
+          <div class="flex items-center justify-center w-12 h-12 rounded-full transition-all duration-300 {currentStep === 'results' ? 'bg-[var(--color-primary-500)] text-[var(--color-primary-contrast-500)] scale-110' : currentStep === 'packages' ? 'bg-green-600 text-white' : 'bg-[var(--color-surface-200)] dark:bg-[var(--color-surface-700)] text-[var(--color-surface-600)] dark:text-[var(--color-surface-300)]'}">
             {#if currentStep === 'results'}
               <span class="text-xl font-bold">2</span>
             {:else if currentStep === 'packages'}
@@ -146,18 +149,18 @@
               <span class="text-xl font-bold">2</span>
             {/if}
           </div>
-          <span class="text-base font-semibold {currentStep === 'results' ? 'text-primary-500' : currentStep === 'packages' ? 'text-surface-600-300' : 'text-surface-400-500'}">
+          <span class="text-base font-semibold {currentStep === 'results' ? 'text-primary-500' : currentStep === 'packages' ? 'text-[var(--color-surface-600)] dark:text-[var(--color-surface-300)]' : 'text-[var(--color-surface-400)] dark:text-[var(--color-surface-500)]'}">
             Review Results
           </span>
         </li>
 
-        <div class="hidden md:block w-20 h-2 rounded-full transition-all duration-500 {currentStep === 'packages' ? 'bg-success-500' : 'bg-surface-300-600'}"></div>
+        <div class="hidden md:block w-20 h-2 rounded-full transition-all duration-500 {currentStep === 'packages' ? 'bg-green-600' : 'bg-[var(--color-surface-300)] dark:bg-[var(--color-surface-600)]'}"></div>
 
         <li class="flex items-center gap-3 animate-slide-in [animation-delay:200ms]">
-          <div class="flex items-center justify-center w-12 h-12 rounded-full transition-all duration-300 {currentStep === 'packages' ? 'variant-filled-primary scale-110' : 'variant-soft-surface'}">
+          <div class="flex items-center justify-center w-12 h-12 rounded-full transition-all duration-300 {currentStep === 'packages' ? 'bg-[var(--color-primary-500)] text-[var(--color-primary-contrast-500)] scale-110' : 'bg-[var(--color-surface-200)] dark:bg-[var(--color-surface-700)] text-[var(--color-surface-600)] dark:text-[var(--color-surface-300)]'}">
             <span class="text-xl font-bold">3</span>
           </div>
-          <span class="text-base font-semibold {currentStep === 'packages' ? 'text-primary-500' : 'text-surface-400-500'}">
+          <span class="text-base font-semibold {currentStep === 'packages' ? 'text-primary-500' : 'text-[var(--color-surface-400)] dark:text-[var(--color-surface-500)]'}">
             Select Package
           </span>
         </li>
@@ -180,8 +183,8 @@
               <div class="absolute inset-0 bg-gradient-to-r from-primary-500 to-secondary-500 opacity-20 blur-xl animate-pulse"></div>
             </div>
             <div class="space-y-2">
-              <h3 class="h3 font-bold">Processing...</h3>
-              <p class="text-surface-600-300">
+              <h3 class="text-2xl font-bold">Processing...</h3>
+              <p class="text-[var(--color-surface-600)] dark:text-[var(--color-surface-300)]">
                 {#if currentStep === 'input'}
                   Parsing prescription with AI
                 {:else if currentStep === 'results'}
@@ -224,7 +227,7 @@
         <!-- Show parsed results in condensed form -->
         {#if parsedResult}
           <Card variant="outlined" padding="md" class="border-primary-500/30 bg-primary-50/10">
-            <h3 class="h4 mb-3 flex items-center gap-2">
+            <h3 class="text-lg font-semibold mb-3 flex items-center gap-2">
               <svg class="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
@@ -232,7 +235,7 @@
             </h3>
             <p class="text-lg">
               <strong class="font-bold text-primary-500">{parsedResult.drugName}</strong>
-              <span class="text-surface-600-300">{parsedResult.strength} {parsedResult.form} - {parsedResult.quantity} units</span>
+              <span class="text-[var(--color-surface-600)] dark:text-[var(--color-surface-300)]">{parsedResult.strength} {parsedResult.form} - {parsedResult.quantity} units</span>
             </p>
           </Card>
         {/if}
@@ -252,7 +255,7 @@
   <!-- Footer -->
   <footer class="bg-surface-100-800 border-t border-surface-200-700 mt-auto">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <p class="text-center text-sm text-surface-600-300 font-medium">
+      <p class="text-center text-sm text-[var(--color-surface-600)] dark:text-[var(--color-surface-300)] font-medium">
         RxMatch - AI-Powered NDC Packaging & Quantity Calculator
         <span class="mx-3">•</span>
         <button type="button" class="anchor transition-colors duration-250">Privacy Policy</button>

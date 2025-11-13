@@ -103,10 +103,10 @@
     <header class="mb-8">
       <div class="flex items-start justify-between mb-6">
         <div>
-          <h2 class="h2 gradient-heading mb-3">
+          <h2 class="text-3xl font-bold gradient-heading mb-3">
             Available NDC Packages
           </h2>
-          <p class="text-surface-600-300 text-base">
+          <p class="text-[var(--color-surface-600)] dark:text-[var(--color-surface-300)] text-base">
             Select the best package option based on quantity needs and cost efficiency
           </p>
         </div>
@@ -115,7 +115,7 @@
       <!-- Export Buttons -->
       {#if prescriptionParse && calculationResult}
         <div class="flex items-center gap-4">
-          <span class="text-sm text-surface-600-300 font-semibold uppercase tracking-wide">Export Results:</span>
+          <span class="text-sm text-[var(--color-surface-600)] dark:text-[var(--color-surface-300)] font-semibold uppercase tracking-wide">Export Results:</span>
           <Button
             variant="primary"
             size="sm"
@@ -137,7 +137,7 @@
             CSV
           </Button>
           {#if selectedNdc}
-            <span class="text-xs text-surface-500-400 ml-2">(includes selected package)</span>
+            <span class="text-xs text-[var(--color-surface-500)] dark:text-[var(--color-surface-400)] ml-2">(includes selected package)</span>
           {/if}
         </div>
       {/if}
@@ -149,12 +149,12 @@
         {#each warnings as warning}
           <div
             role="alert"
-            class="alert variant-filled-warning"
+            class="flex items-start gap-3 p-4 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800"
           >
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+            <svg class="w-6 h-6 flex-shrink-0 text-yellow-600 dark:text-yellow-400" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
               <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
             </svg>
-            <p class="alert-message">{warning}</p>
+            <p class="flex-1 text-sm text-yellow-800 dark:text-yellow-200">{warning}</p>
           </div>
         {/each}
       </div>
@@ -164,16 +164,16 @@
     {#if inactiveCount > 0 && !filterInactive}
       <div
         role="alert"
-        class="alert variant-filled-error mb-6 animate-slide-in [animation-delay:50ms]"
+        class="flex items-start gap-3 p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 mb-6 animate-slide-in [animation-delay:50ms]"
       >
-        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+        <svg class="w-6 h-6 flex-shrink-0 text-red-600 dark:text-red-400" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
           <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
         </svg>
-        <div class="alert-message">
-          <h3 class="h4 mb-2">
+        <div class="flex-1">
+          <h3 class="text-lg font-semibold text-red-900 dark:text-red-100 mb-2">
             {inactiveCount} Inactive NDC{inactiveCount !== 1 ? 's' : ''} Detected
           </h3>
-          <p class="text-sm">
+          <p class="text-sm text-red-800 dark:text-red-200">
             Some NDC codes in this list are no longer actively marketed and may be discontinued or unavailable.
             Selecting an inactive NDC may result in prescription fulfillment issues.
             <strong class="block mt-2">You will be required to acknowledge this risk before selecting an inactive NDC.</strong>
@@ -184,15 +184,15 @@
 
     <!-- Filter Controls -->
     <div class="mb-6 flex items-center gap-4 animate-slide-in [animation-delay:100ms]">
-      <label class="label flex items-center gap-3 cursor-pointer">
+      <label class="flex items-center gap-3 cursor-pointer">
         <input
           type="checkbox"
           bind:checked={filterInactive}
-          class="checkbox"
+          class="w-4 h-4 rounded border-[var(--color-surface-300)] dark:border-[var(--color-surface-700)] text-[var(--color-primary-500)] focus:ring-2 focus:ring-[var(--color-primary-500)] bg-white dark:bg-[var(--color-surface-900)] transition-all duration-250 cursor-pointer"
         />
         <span class="text-sm font-medium">Hide inactive NDC codes</span>
       </label>
-      <span class="text-sm text-surface-500-400 font-medium">
+      <span class="text-sm text-[var(--color-surface-500)] dark:text-[var(--color-surface-400)] font-medium">
         ({filteredPackages.length} of {packages.length} packages shown)
       </span>
     </div>
@@ -200,11 +200,11 @@
     <!-- Packages Grid -->
     {#if filteredPackages.length === 0}
       <Card variant="outlined" padding="lg" class="text-center animate-fade-in">
-        <svg class="mx-auto h-12 w-12 text-surface-400-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <svg class="mx-auto h-12 w-12 text-[var(--color-surface-400)] dark:text-[var(--color-surface-500)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
         </svg>
-        <h3 class="h3 mt-4">No Packages Available</h3>
-        <p class="mt-2 text-surface-600-300">
+        <h3 class="text-2xl font-bold mt-4">No Packages Available</h3>
+        <p class="mt-2 text-[var(--color-surface-600)] dark:text-[var(--color-surface-300)]">
           {filterInactive ? 'Try showing inactive NDC codes' : 'No NDC packages found for this prescription'}
         </p>
       </Card>
@@ -218,7 +218,7 @@
           <Card
             variant="outlined"
             padding="md"
-            class="package-card transition-all duration-250 {isSelected ? 'border-primary-500 !bg-primary-50/30 shadow-lg scale-[1.01]' : pkg.isActive ? 'border-surface-300-600 hover:border-primary-500/40 hover:shadow-md' : 'border-error-500/40 !bg-error-50/20'}"
+            class="package-card transition-all duration-250 {isSelected ? 'border-primary-500 !bg-primary-50/30 shadow-lg scale-[1.01]' : pkg.isActive ? 'border-[var(--color-surface-300)] dark:border-[var(--color-surface-600)] hover:border-primary-500/40 hover:shadow-md' : 'border-red-600/40 !bg-red-50/20'}"
           >
             <div class="flex items-start justify-between gap-4">
               <!-- Package Info -->
@@ -232,7 +232,7 @@
                     value={pkg.ndc}
                     checked={isSelected}
                     onchange={() => handleSelect(pkg.ndc, pkg)}
-                    class="radio mt-1"
+                    class="w-4 h-4 mt-1 border-[var(--color-surface-300)] dark:border-[var(--color-surface-700)] text-[var(--color-primary-500)] focus:ring-2 focus:ring-[var(--color-primary-500)] bg-white dark:bg-[var(--color-surface-900)] transition-all duration-250 cursor-pointer"
                     aria-describedby="package-{pkg.ndc}-description"
                   />
 
@@ -254,7 +254,7 @@
                         {/if}
                       </div>
 
-                      <p class="text-sm text-surface-600-300 mb-3">
+                      <p class="text-sm text-[var(--color-surface-600)] dark:text-[var(--color-surface-300)] mb-3">
                         {pkg.labelerName}
                         {#if pkg.brandName}
                           <span class="font-semibold">({pkg.brandName})</span>
@@ -264,30 +264,30 @@
                       {#if !pkg.isActive && pkg.expirationDate}
                         {@const formattedExpiration = formatExpirationDate(pkg.expirationDate)}
                         {#if formattedExpiration}
-                          <div class="mb-3 alert variant-soft-error !py-2 !px-3 text-xs">
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                          <div class="mb-3 flex items-center gap-2 py-2 px-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-xs">
+                            <svg class="w-4 h-4 flex-shrink-0 text-red-600 dark:text-red-400" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                               <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
                             </svg>
-                            <span class="alert-message"><strong>Listing expired:</strong> {formattedExpiration}</span>
+                            <span class="text-red-800 dark:text-red-200"><strong>Listing expired:</strong> {formattedExpiration}</span>
                           </div>
                         {/if}
                       {/if}
 
                       <div id="package-{pkg.ndc}-description" class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
                         <div>
-                          <span class="text-surface-600-300 font-medium">NDC:</span>
+                          <span class="text-[var(--color-surface-600)] dark:text-[var(--color-surface-300)] font-medium">NDC:</span>
                           <span class="font-mono ml-1">{pkg.ndc}</span>
                         </div>
                         <div>
-                          <span class="text-surface-600-300 font-medium">Strength:</span>
+                          <span class="text-[var(--color-surface-600)] dark:text-[var(--color-surface-300)] font-medium">Strength:</span>
                           <span class="ml-1">{pkg.strength}</span>
                         </div>
                         <div>
-                          <span class="text-surface-600-300 font-medium">Form:</span>
+                          <span class="text-[var(--color-surface-600)] dark:text-[var(--color-surface-300)] font-medium">Form:</span>
                           <span class="ml-1 capitalize">{pkg.dosageForm.toLowerCase()}</span>
                         </div>
                         <div>
-                          <span class="text-surface-600-300 font-medium">Route:</span>
+                          <span class="text-[var(--color-surface-600)] dark:text-[var(--color-surface-300)] font-medium">Route:</span>
                           <span class="ml-1 capitalize">{pkg.route.join(', ').toLowerCase()}</span>
                         </div>
                       </div>
@@ -296,28 +296,28 @@
                 </div>
 
                 <!-- Package Details -->
-                <div class="ml-7 pl-4 border-l-2 border-surface-300-600 space-y-3">
+                <div class="ml-7 pl-4 border-l-2 border-[var(--color-surface-300)] dark:border-[var(--color-surface-600)] space-y-3">
                   <div class="text-sm">
-                    <span class="font-semibold text-surface-600-300">Package:</span>
+                    <span class="font-semibold text-[var(--color-surface-600)] dark:text-[var(--color-surface-300)]">Package:</span>
                     <span class="ml-2">{pkg.packageDescription}</span>
                   </div>
 
                   {#if recommendation}
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
                       <div>
-                        <span class="text-surface-600-300 font-medium">Quantity Needed:</span>
+                        <span class="text-[var(--color-surface-600)] dark:text-[var(--color-surface-300)] font-medium">Quantity Needed:</span>
                         <span class="font-bold ml-1">{recommendation.quantityNeeded}</span>
                       </div>
                       <div>
-                        <span class="text-surface-600-300 font-medium">Packages:</span>
+                        <span class="text-[var(--color-surface-600)] dark:text-[var(--color-surface-300)] font-medium">Packages:</span>
                         <span class="font-bold ml-1">{recommendation.packagesRequired}</span>
                       </div>
                       <div>
-                        <span class="text-surface-600-300 font-medium">Total Units:</span>
+                        <span class="text-[var(--color-surface-600)] dark:text-[var(--color-surface-300)] font-medium">Total Units:</span>
                         <span class="font-bold ml-1">{recommendation.totalUnits}</span>
                       </div>
                       <div>
-                        <span class="text-surface-600-300 font-medium">Overage:</span>
+                        <span class="text-[var(--color-surface-600)] dark:text-[var(--color-surface-300)] font-medium">Overage:</span>
                         <span class="font-bold ml-1 {recommendation.overage === 0 ? 'text-success-500' : recommendation.overage <= 10 ? 'text-primary-500' : 'text-warning-500'}">
                           {recommendation.overage > 0 ? '+' : ''}{recommendation.overage}
                         </span>
@@ -353,13 +353,13 @@
                 <svg class="w-5 h-5 text-primary-500" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                   <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                 </svg>
-                <h3 class="h4 text-primary-500">Selected Package</h3>
+                <h3 class="text-lg font-semibold text-primary-500">Selected Package</h3>
               </div>
               <p class="text-base mb-2">
                 <span class="font-bold">{selectedPkg.genericName}</span>
-                <span class="text-surface-600-300"> - {selectedPkg.packageDescription}</span>
+                <span class="text-[var(--color-surface-600)] dark:text-[var(--color-surface-300)]"> - {selectedPkg.packageDescription}</span>
               </p>
-              <p class="text-sm text-surface-600-300">
+              <p class="text-sm text-[var(--color-surface-600)] dark:text-[var(--color-surface-300)]">
                 NDC: <span class="font-mono">{selectedPkg.ndc}</span>
                 {#if selectedRec}
                   <span class="mx-2">•</span>

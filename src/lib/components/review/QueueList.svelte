@@ -10,10 +10,10 @@
   let { items, onitemSelect }: Props = $props();
 
   function getConfidenceClass(score: number | null | undefined): string {
-    if (!score) return 'text-surface-500-400';
-    if (score >= 0.8) return 'text-success-500';
-    if (score >= 0.6) return 'text-warning-500';
-    return 'text-error-500';
+    if (!score) return 'text-[var(--color-surface-500)] dark:text-[var(--color-surface-400)]';
+    if (score >= 0.8) return 'text-green-600 dark:text-green-400';
+    if (score >= 0.6) return 'text-yellow-600 dark:text-yellow-400';
+    return 'text-red-600 dark:text-red-400';
   }
 
   function getPriorityBadge(priority: string): { variant: 'error' | 'warning' | 'primary' | 'info'; label: string } {
@@ -57,11 +57,11 @@
 <div class="space-y-4">
   {#if items.length === 0}
     <Card variant="outlined" padding="lg" class="text-center animate-fade-in">
-      <svg class="mx-auto h-12 w-12 text-surface-400-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+      <svg class="mx-auto h-12 w-12 text-[var(--color-surface-400)] dark:text-[var(--color-surface-500)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
       </svg>
-      <h3 class="h3 mt-4">No items to review</h3>
-      <p class="mt-2 text-surface-600-300">All prescriptions have been reviewed or no items match the filter.</p>
+      <h3 class="text-2xl font-bold mt-4">No items to review</h3>
+      <p class="mt-2 text-[var(--color-surface-600)] dark:text-[var(--color-surface-300)]">All prescriptions have been reviewed or no items match the filter.</p>
     </Card>
   {:else}
     <Card variant="elevated" padding="none" class="overflow-hidden animate-fade-in">
@@ -102,11 +102,11 @@
                     {:else if audit?.prescriptionText}
                       {truncateText(audit.prescriptionText, 80)}
                     {:else}
-                      <span class="text-surface-500-400 italic">No prescription data</span>
+                      <span class="text-[var(--color-surface-500)] dark:text-[var(--color-surface-400)] italic">No prescription data</span>
                     {/if}
                   </div>
                   {#if parsedResult?.quantity}
-                    <div class="text-xs text-surface-600-300 mt-1">
+                    <div class="text-xs text-[var(--color-surface-600)] dark:text-[var(--color-surface-300)] mt-1">
                       Qty: {parsedResult.quantity}
                     </div>
                   {/if}
@@ -120,7 +120,7 @@
                       <ProgressBar value={audit.confidenceScore * 100} size="sm" />
                     </div>
                   {:else}
-                    <span class="text-sm text-surface-500-400">N/A</span>
+                    <span class="text-sm text-[var(--color-surface-500)] dark:text-[var(--color-surface-400)]">N/A</span>
                   {/if}
                 </td>
                 <td>
@@ -135,11 +135,11 @@
                         </span>
                       </div>
                     {:else}
-                      <span class="text-surface-500-400 italic">Unassigned</span>
+                      <span class="text-[var(--color-surface-500)] dark:text-[var(--color-surface-400)] italic">Unassigned</span>
                     {/if}
                   </div>
                 </td>
-                <td class="text-sm text-surface-600-300">
+                <td class="text-sm text-[var(--color-surface-600)] dark:text-[var(--color-surface-300)]">
                   {formatDate(item.reviewQueueItem.createdAt)}
                 </td>
                 <td class="text-right">

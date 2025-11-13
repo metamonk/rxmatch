@@ -74,10 +74,10 @@
         <div class="flex items-center gap-4">
           <Logo size="lg" variant="default" />
           <div>
-            <h1 class="h1 gradient-heading !text-4xl">
+            <h1 class="text-4xl font-bold gradient-heading">
               Manual Review Queue
             </h1>
-            <p class="mt-2 text-sm text-surface-600-300 font-medium">
+            <p class="mt-2 text-sm text-[var(--color-surface-600)] dark:text-[var(--color-surface-300)] font-medium">
               Review and approve low-confidence prescription calculations
             </p>
           </div>
@@ -101,7 +101,7 @@
             </svg>
           </div>
           <div>
-            <p class="text-sm font-semibold text-surface-600-300 uppercase tracking-wide">Total Items</p>
+            <p class="text-sm font-semibold text-[var(--color-surface-600)] dark:text-[var(--color-surface-300)] uppercase tracking-wide">Total Items</p>
             <p class="text-3xl font-bold text-primary-500">{items.length}</p>
           </div>
         </div>
@@ -115,7 +115,7 @@
             </svg>
           </div>
           <div>
-            <p class="text-sm font-semibold text-surface-600-300 uppercase tracking-wide">Pending</p>
+            <p class="text-sm font-semibold text-[var(--color-surface-600)] dark:text-[var(--color-surface-300)] uppercase tracking-wide">Pending</p>
             <p class="text-3xl font-bold text-warning-500">
               {items.filter(i => i.reviewQueueItem.status === 'pending').length}
             </p>
@@ -132,7 +132,7 @@
             </svg>
           </div>
           <div>
-            <p class="text-sm font-semibold text-surface-600-300 uppercase tracking-wide">In Review</p>
+            <p class="text-sm font-semibold text-[var(--color-surface-600)] dark:text-[var(--color-surface-300)] uppercase tracking-wide">In Review</p>
             <p class="text-3xl font-bold text-secondary-500">
               {items.filter(i => i.reviewQueueItem.status === 'in_review').length}
             </p>
@@ -148,7 +148,7 @@
             </svg>
           </div>
           <div>
-            <p class="text-sm font-semibold text-surface-600-300 uppercase tracking-wide">Completed</p>
+            <p class="text-sm font-semibold text-[var(--color-surface-600)] dark:text-[var(--color-surface-300)] uppercase tracking-wide">Completed</p>
             <p class="text-3xl font-bold text-success-500">
               {items.filter(i => i.reviewQueueItem.status === 'completed').length}
             </p>
@@ -173,11 +173,11 @@
             </svg>
             <div class="absolute inset-0 bg-gradient-to-r from-primary-500 to-secondary-500 opacity-20 blur-xl animate-pulse"></div>
           </div>
-          <p class="text-lg font-semibold text-surface-600-300">Loading review queue...</p>
+          <p class="text-lg font-semibold text-[var(--color-surface-600)] dark:text-[var(--color-surface-300)]">Loading review queue...</p>
         </div>
       </Card>
     {:else if error}
-      <Card variant="elevated" padding="lg" class="border-error-500 border-2 text-center animate-fade-in">
+      <Card variant="elevated" padding="lg" class="border-red-600 border-2 text-center animate-fade-in">
         <div class="flex flex-col items-center gap-4">
           <div class="variant-filled-error p-4 rounded-full">
             <svg class="h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -185,8 +185,8 @@
             </svg>
           </div>
           <div class="space-y-2">
-            <h3 class="h3 font-bold text-error-500">Error Loading Queue</h3>
-            <p class="text-surface-600-300">{error}</p>
+            <h3 class="text-2xl font-bold text-red-600 dark:text-red-400">Error Loading Queue</h3>
+            <p class="text-[var(--color-surface-600)] dark:text-[var(--color-surface-300)]">{error}</p>
           </div>
           <Button variant="danger" onclick={loadItems} class="mt-2">
             Try Again

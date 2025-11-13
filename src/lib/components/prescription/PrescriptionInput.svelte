@@ -96,10 +96,10 @@
 <div class="prescription-input w-full max-w-4xl mx-auto animate-fade-in">
   <Card variant="elevated" padding="lg">
     <header class="mb-8">
-      <h2 class="h2 gradient-heading mb-3">
+      <h2 class="text-3xl font-bold gradient-heading mb-3">
         Enter Prescription
       </h2>
-      <p class="text-surface-600-300 text-base">
+      <p class="text-[var(--color-surface-600)] dark:text-[var(--color-surface-300)] text-base">
         Enter prescription details below or upload a prescription image/file for processing.
       </p>
     </header>
@@ -107,10 +107,10 @@
     <form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }} class="space-y-4">
       <!-- Textarea Input -->
       <div class="form-group">
-        <label for="prescription-text" class="label mb-3">
-          <span class="text-base font-semibold">
+        <label for="prescription-text" class="block mb-3">
+          <span class="text-base font-semibold text-[var(--color-surface-950)] dark:text-[var(--color-surface-50)]">
             Prescription Details
-            <span class="text-error-500" aria-label="required">*</span>
+            <span class="text-red-600" aria-label="required">*</span>
           </span>
         </label>
         <textarea
@@ -129,7 +129,7 @@
           aria-invalid={!!validationError}
           disabled={isSubmitting}
         ></textarea>
-        <p id="prescription-help" class="mt-3 text-sm text-surface-600-300 flex items-center gap-2">
+        <p id="prescription-help" class="mt-3 text-sm text-[var(--color-surface-600)] dark:text-[var(--color-surface-300)] flex items-center gap-2">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
@@ -139,15 +139,15 @@
 
       <!-- File Upload -->
       <div class="form-group">
-        <label for="prescription-file" class="label mb-3">
-          <span class="text-base font-semibold">Or Upload Prescription File</span>
+        <label for="prescription-file" class="block mb-3">
+          <span class="text-base font-semibold text-[var(--color-surface-950)] dark:text-[var(--color-surface-50)]">Or Upload Prescription File</span>
         </label>
         <input
           id="prescription-file"
           bind:this={fileInput}
           type="file"
           accept=".txt,.pdf,.jpg,.jpeg,.png"
-          onchange={handleFileChange}
+          onchange={(e) => handleFileChange(e)}
           class="block w-full text-sm text-[var(--color-surface-950)] dark:text-[var(--color-surface-50)]
                  file:mr-4 file:py-2 file:px-4
                  file:rounded-lg file:border-0
@@ -164,7 +164,7 @@
           aria-describedby="file-help"
           disabled={isSubmitting}
         />
-        <p id="file-help" class="mt-3 text-sm text-surface-600-300 flex items-center gap-2">
+        <p id="file-help" class="mt-3 text-sm text-[var(--color-surface-600)] dark:text-[var(--color-surface-300)] flex items-center gap-2">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
           </svg>
@@ -176,14 +176,14 @@
       {#if validationError}
         <div
           role="alert"
-          class="alert variant-filled-error animate-slide-in"
+          class="flex items-start gap-3 p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 animate-slide-in"
         >
-          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+          <svg class="w-6 h-6 flex-shrink-0 text-red-600 dark:text-red-400" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
           </svg>
-          <div class="alert-message">
-            <h3 class="h4">Validation Error</h3>
-            <p>{validationError}</p>
+          <div class="flex-1">
+            <h3 class="text-lg font-semibold text-red-900 dark:text-red-100 mb-1">Validation Error</h3>
+            <p class="text-sm text-red-800 dark:text-red-200">{validationError}</p>
           </div>
         </div>
       {/if}
